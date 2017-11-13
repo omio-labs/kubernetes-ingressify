@@ -6,12 +6,12 @@ set -e
 mkdir -p gen
 
 # Insert version
-version=${VERSION:-latest}
-echo $version >> "tmp/version"
+version=${VERSION:-master}
+echo $version >> "gen/version"
 
 # Generate license notices
 deps="github.com/goeuro/ingress-generator-kit $(go list -f '{{ join .Deps "\n"}}' ./... | grep -v 'goeuro/ingress-generator-kit')"
-out="tmp/LICENSES"
+out="gen/LICENSES"
 echo -e "OPEN SOURCE LICENSES\n" > $out
 
 for dep in $deps; do
