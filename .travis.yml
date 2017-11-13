@@ -7,18 +7,18 @@ install:
 script:
 - bin/test.sh
 - VERSION="$TRAVIS_TAG-$TRAVIS_COMMIT" bin/cross-compile.sh
-- ls gen/
 after_success:
 - mv overalls.coverprofile coverage.txt
 - bash <(curl -s https://codecov.io/bash) -t 1e11888e-6fb8-458d-b0d9-515b49b74529
+- bin/release-latest.sh
 deploy:
   provider: releases
   skip_cleanup: true
   api_key:
-    secure: jmHHafXk5voPSeNJZauF+cc08X4bqVZAvNJP1nEn6GcnMZOicjNRR0OYswvcgfRyrOUVVsrg8DjOxux8xpwIQmCGWdRZga/eRp4dm25eFD4qjF9Oe81k/3QfWB9LtJWp7mwk5IfjooxMQT2mivJiBFGBEd+a9Q3Nortg3PDBMptViALKUb5xMvBkjn0uq0yV8+1GMe5bdJ+Vz4fB4Q2DFwdIfh65V1Ke4P4fsXqjUyLKV4O/baMzn0TREM8FeAwA6k4Fzk8vliI4Q1DUoZ2hkpSaVx/63oArJ5Wh8at3+09jI10LxglG4x0y19yXaHHW+KIFWTlo/RVlSxHWMh+PyrUKP5N0GU+N5/GUwHWFLJzT5F88TtWJ3MXH51kkNipLmHezS3JB6GtxZE1tPrdNjNpXZTG0u9Q+SrKjxQS3O6pA7y68OAoLdYi223d3ogoGckpIgCl4woApJIusGSOfbU6Z7YrZH4UBjRas3zP2cdzOICSsm07Ncw4Zi+omYaGAyHEow7AzNGaH5YpxdjAqYrk06qL92Zurq8ZbDXPtM/W19rtGXQrD3TOEX8Eo1xH53eTe3D0EjxZRTAvfQyLFd9G9uMcPYwqy9r1oGzqVh/OAoOxaepDg0q0T1HOvWOUiX5k00u1PRTiobhKjivxo/ZcClsUFop0khAziyGCM2Ac=
+    secure: NBlXyTxEUf3ZvkKP7cw6dpS72lQ7f8lZ+cNgc3ht6mvyU8zlRxPYSDBQZBvV1pCKsWTUTZJqpPTdZMGX8m6u4jco/0JIne2guOMvFwDamlQSQ8WkQYpgSXzO/bI/+weAXKIY0hNsJKe5+mBG36zUM2OLh6+erZqcKUqSQRYdHYRZdZH5bqmPq8j6hI0EXS9Oy0inggHHQXznGyXxNXN9SGQUldh6WPywyTXqoKB+lZcCoWf13o1ETcR99Km+MK6Pf2xC1EHHMMcscWIlPrkHnTF03MAMz0pT26n+nbcF6AoPrY38DMeenPIbA3rGmtL9zviwUy5VuqNOz3ema3F7sF6CRM+fnpOeAk7hmBmeJANgiKDN9AkobGxpEkfOslewOtR+GKdH8CNSGgg02RCwf+/1TYyAjTwIiBDcTwPjOoZCKwVyif5j/KlnlYkcV96Iqwf+GrFUFS1b7vQn44u+AFJQ4RHkcuuBUkqOA1nIXfXmA8Cj/O3EkLeY9sza7vE7nGUCvgXUabwipRt0/WT8OMQkNuUihKfmoXVwVE6+mjo8aL/UCQeLgqv80FJA6rEPfGXQ5+GVQ3Nyc+i6KV3ldd+Wuf6a4PoLbQIK6Vp1xXbuYh4btO20hgCdr2aAGIDO+ZhwfClCWtmZMIg/GbchWbVmly3ClnVTKf3Nu/VDbms=
   file:
-    - gen/ingress-generator-kit_linux_amd64
-    - gen/ingress-generator-kit_darwin_amd64
+  - gen/ingress-generator-kit_linux_amd64
+  - gen/ingress-generator-kit_darwin_amd64
   on:
     repo: goeuro/ingress-generator-kit
     branch: none
@@ -26,3 +26,6 @@ deploy:
     condition: "$TRAVIS_TAG =~ ^v[0-9].+$"
 notifications:
   email: false
+env:
+  global:
+    secure: MvRV33pB8DRN2yr1DbFF6yWEz1zNP3aA+uAOFnfzl13HqPKs1NaXKKwjmkXz5osAl21GWqGOCdlliwWiChsr0Re+/rvvEE7CmCs2tYIVh8t8Yg+GzL9+E1d5UADzWZ8xe2ZPHkNVvIh3al/hxcb3myJdwVEmnZ6t6OR0cCf5yha3gMiHTcz2Ug8PY2zCXHNu5V8Btg8jAfnTg8gY+w7qD3QXEOurbTn6/IaD5BLsvg2DwaWM+wYaIha2XK1qwmbO4f2GQyPeEOaNQ9z/WDMox9SS6tE3UWT3nMHnJhdkV79P9u5h7OJPuOwZB0/AOdH/o2XEVqxJhb+6tomhe+HSK8XaHkyajCZkSIWLHwuzL1FQyGbxcW+RthI01il6ENeJ/TC/KRgP1gtXG3IYu8iQCW+ayVcG4pELmOhZ2gdOXjXru5gUbVdh7bPMkGmxgOiIoGFcPOBkv1hzoo4mDsTq86zcSTdNV/16MPxh5d7ntJpUrNh+eBY39Dfuk4fZf7wskidR+oYcvQXnQsW+x4CoeITN49akzuTZhx2fw4Chip4klcPzACENsSBnmS1ki+q0kYZ50IXH9XGdKht/5kAU5QgLSJXUZnWnLc7SPXISIE810uGFFya0Igmf1jf+HvU+YLtD7dhKAdTPZXkfraMj0EdnQ7AbdPnSS11DzOg7/pQ=
