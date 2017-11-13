@@ -6,7 +6,7 @@ if [ "$TRAVIS_BRANCH" != "master" ]; then
   exit 0
 fi
 
-VERSION="v0.0.1-latest"
+VERSION="v0.0.1-snapshot"
 git tag -d $VERSION || true
 git tag $VERSION
 git push https://${GH_TOKEN}:x-oauth-basic@github.com/goeuro/ingress-generator-kit.git $VERSION -f
