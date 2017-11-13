@@ -3,10 +3,11 @@
 set -e
 
 # Prepare tmp folder
+rm -Rf gen
 mkdir -p gen
 
 # Insert version
-version=${VERSION:-master}
+version="${VERSION:-v0.0.1-latest}+$(git rev-parse HEAD)"
 echo $version >> "gen/version"
 
 # Generate license notices
