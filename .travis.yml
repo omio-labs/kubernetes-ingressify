@@ -7,6 +7,7 @@ install:
 script:
 - bin/test.sh
 - VERSION="$TRAVIS_TAG-$TRAVIS_COMMIT" bin/cross-compile.sh
+- ls gen/
 after_success:
 - mv overalls.coverprofile coverage.txt
 - bash <(curl -s https://codecov.io/bash) -t 1e11888e-6fb8-458d-b0d9-515b49b74529
