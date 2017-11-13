@@ -7,7 +7,7 @@ rm -Rf gen
 mkdir -p gen
 
 # Insert version
-version="${VERSION:-v0.0.1-latest}.$(git rev-parse --short HEAD).$(date -u +"%Y%m%d%H%M%S")"
+version="${VERSION:-v0.0.1-snapshot}.$(git rev-parse --short HEAD).$(date -u +"%Y%m%d%H%M%S")"
 echo $version >> "gen/version"
 
 # Generate license notices
