@@ -1,0 +1,11 @@
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+*~
+.env*
+.git*
+*.DS_Store
+*.log
+vendor/
+tmp/

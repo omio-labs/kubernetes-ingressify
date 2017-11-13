@@ -1,0 +1,4 @@
+default:
+  build: .
+  volumes:
+    - ".:/go/src/github.com/goeuro/ingress-generator-kit"
