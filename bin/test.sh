@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -xe
 
-# tests with coverage
+echo 'Running tests...'
 overalls -project=github.com/goeuro/ingress-generator-kit -covermode=atomic
 
-# gofmt
-! (gofmt -l -s -e . 2>&1 | grep -v 'vendor/' | grep .go)
+echo 'Checking code format...'
+(! gofmt -l -s -e . 2>&1 | grep -v 'vendor/' | grep .go) || exit 1
 
-# golint
+echo 'Linting...'
 golint -set_exit_status .
