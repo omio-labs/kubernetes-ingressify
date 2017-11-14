@@ -13,7 +13,7 @@ You can use this to generate ingress-based configuration for any backend router.
 
 There are multiple kubernetes ingress controller implementations.
 Unfortunately they control both router implementation (how router is compiled, built, etc), behavior and configuration.
-Its not easy to extend them and add custom logic, e.g. adding custom nginx modules/plugins, custom annotations/features, overriding templates, etc.
+Its not easy to extend them and add custom logic, e.g. adding custom modules or plugins on the router, custom annotations and routing features, overriding templates, etc.
 Different organizations have different traffic handling needs, and having a third-party ingress controller own everything is not possible in many scenarios.
 But at the same time, the cost of writing your own ingress controller is also quite high.
 This is an attempt to decouple router implementation from configuration and allow anyone to easily create their own ingress controllers.
