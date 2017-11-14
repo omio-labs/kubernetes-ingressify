@@ -1,7 +1,5 @@
 # ingress-generator-kit [![Latest Release](https://img.shields.io/github/release/goeuro/ingress-generator-kit.svg)](https://github.com/goeuro/ingress-generator-kit/releases/latest) [![Build Status](https://travis-ci.org/goeuro/ingress-generator-kit.svg?branch=master)](https://travis-ci.org/goeuro/ingress-generator-kit) [![Go Report Card](https://goreportcard.com/badge/github.com/goeuro/ingress-generator-kit)](https://goreportcard.com/report/github.com/goeuro/ingress-generator-kit) [![codecov](https://codecov.io/gh/goeuro/ingress-generator-kit/branch/master/graph/badge.svg)](https://codecov.io/gh/goeuro/ingress-generator-kit)
 
-> Simple binary that watches kubernetes ingress rules, renders your template and calls your script
-
 This is a simple binary which watches kubernetes ingress rules, renders your template and calls your script.
 You can use this to generate ingress-based configuration for any backend router.
 
