@@ -12,6 +12,15 @@ Unfortunately they control both router implementation (how router is compiled, b
 Its not easy to extend them and add custom logic, e.g. adding custom nginx modules/plugins, custom annotations/features, overriding templates, etc.
 This is an attempt to decouple router implementation from configuration and allow anyone to create ingress-aware routers.
 
+## Current status
+
+- [x] Bootstrap
+- [ ] >> Usage workflow and CLI design
+- [ ] Implementation
+- [ ] Dogfood
+- [ ] Documentation and examples
+- [ ] Release v1.0
+
 ## Usage
 
 We have a special release called `v0.0.1-snapshot` which always reflects master build.
