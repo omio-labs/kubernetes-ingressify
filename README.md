@@ -1,4 +1,10 @@
-# ingress-generator-kit [![Latest Release](https://img.shields.io/github/release/goeuro/ingress-generator-kit.svg)](https://github.com/goeuro/ingress-generator-kit/releases/latest) [![Build Status](https://travis-ci.org/goeuro/ingress-generator-kit.svg?branch=master)](https://travis-ci.org/goeuro/ingress-generator-kit) [![Go Report Card](https://goreportcard.com/badge/github.com/goeuro/ingress-generator-kit)](https://goreportcard.com/report/github.com/goeuro/ingress-generator-kit) [![codecov](https://codecov.io/gh/goeuro/ingress-generator-kit/branch/master/graph/badge.svg)](https://codecov.io/gh/goeuro/ingress-generator-kit)
+# ingress-generator-kit
+
+[![Latest Release](https://img.shields.io/github/release/goeuro/ingress-generator-kit.svg)](https://github.com/goeuro/ingress-generator-kit/releases/latest)
+[![Build Status](https://img.shields.io/travis/goeuro/ingress-generator-kit.svg?label=master)](https://travis-ci.org/goeuro/ingress-generator-kit)
+[![Release Status](https://img.shields.io/travis/goeuro/ingress-generator-kit/v0.0.1-snapshot.svg?label=release)](https://travis-ci.org/goeuro/ingress-generator-kit/branches)
+[![Go Report Card](https://goreportcard.com/badge/github.com/goeuro/ingress-generator-kit)](https://goreportcard.com/report/github.com/goeuro/ingress-generator-kit)
+[![codecov](https://codecov.io/gh/goeuro/ingress-generator-kit/branch/master/graph/badge.svg)](https://codecov.io/gh/goeuro/ingress-generator-kit)
 
 This is a simple binary that watches kubernetes ingress rules, renders your template and calls your script.
 You can use this to generate ingress-based configuration for any backend router.
@@ -6,9 +12,11 @@ You can use this to generate ingress-based configuration for any backend router.
 ## Why?
 
 There are multiple kubernetes ingress controller implementations.
-Unfortunately they control both router implementation (how router is compiled, built, etc) and behavior.
-Its not easy to extend them and add custom logic, e.g. adding custom nginx modules/plugins, custom annotations/features, overriding templates, etc.
-This is an attempt to decouple router implementation from configuration and allow anyone to create ingress-aware routers.
+Unfortunately they control both router implementation (how router is compiled, built, etc), behavior and configuration.
+Its not easy to extend them and add custom logic, e.g. adding custom modules or plugins on the router, custom annotations and routing features, overriding templates, etc.
+Different organizations have different traffic handling needs, and having a third-party ingress controller own everything is not possible in many scenarios.
+But at the same time, the cost of writing your own ingress controller is also quite high.
+This is an attempt to decouple router implementation from configuration and allow anyone to easily create their own ingress controllers.
 
 ## Current status
 
