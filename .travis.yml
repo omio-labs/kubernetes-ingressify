@@ -1,5 +1,5 @@
 language: go
-go_import_path: github.com/goeuro/ingress-generator-kit
+go_import_path: github.com/goeuro/kubernetes-ingressify
 go:
 - 1.9
 install:
@@ -18,10 +18,10 @@ deploy:
   api_key:
     secure: NBlXyTxEUf3ZvkKP7cw6dpS72lQ7f8lZ+cNgc3ht6mvyU8zlRxPYSDBQZBvV1pCKsWTUTZJqpPTdZMGX8m6u4jco/0JIne2guOMvFwDamlQSQ8WkQYpgSXzO/bI/+weAXKIY0hNsJKe5+mBG36zUM2OLh6+erZqcKUqSQRYdHYRZdZH5bqmPq8j6hI0EXS9Oy0inggHHQXznGyXxNXN9SGQUldh6WPywyTXqoKB+lZcCoWf13o1ETcR99Km+MK6Pf2xC1EHHMMcscWIlPrkHnTF03MAMz0pT26n+nbcF6AoPrY38DMeenPIbA3rGmtL9zviwUy5VuqNOz3ema3F7sF6CRM+fnpOeAk7hmBmeJANgiKDN9AkobGxpEkfOslewOtR+GKdH8CNSGgg02RCwf+/1TYyAjTwIiBDcTwPjOoZCKwVyif5j/KlnlYkcV96Iqwf+GrFUFS1b7vQn44u+AFJQ4RHkcuuBUkqOA1nIXfXmA8Cj/O3EkLeY9sza7vE7nGUCvgXUabwipRt0/WT8OMQkNuUihKfmoXVwVE6+mjo8aL/UCQeLgqv80FJA6rEPfGXQ5+GVQ3Nyc+i6KV3ldd+Wuf6a4PoLbQIK6Vp1xXbuYh4btO20hgCdr2aAGIDO+ZhwfClCWtmZMIg/GbchWbVmly3ClnVTKf3Nu/VDbms=
   file:
-  - gen/ingress-generator-kit_linux_amd64
-  - gen/ingress-generator-kit_darwin_amd64
+  - gen/kubernetes-ingressify_linux_amd64
+  - gen/kubernetes-ingressify_darwin_amd64
   on:
-    repo: goeuro/ingress-generator-kit
+    repo: goeuro/kubernetes-ingressify
     branch: none
     tags: true
     condition: "$TRAVIS_TAG =~ ^v[0-9].+$"
