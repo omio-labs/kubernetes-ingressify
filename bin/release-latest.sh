@@ -9,4 +9,4 @@ fi
 VERSION="v0.0.1-snapshot"
 git tag -d $VERSION || true
 git tag $VERSION
-git push https://${GH_TOKEN}:x-oauth-basic@github.com/goeuro/ingress-generator-kit.git $VERSION -f
+git push https://${GH_TOKEN}:x-oauth-basic@github.com/goeuro/kubernetes-ingressify.git $VERSION -f

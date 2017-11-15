@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/apex/log"
-	"github.com/goeuro/ingress-generator-kit/core"
+	"github.com/goeuro/kubernetes-ingressify/core"
 	"strings"
 )
 
@@ -13,5 +13,5 @@ func main() {
 	}
 
 	version := strings.TrimSpace(string(data))
-	log.Infof("ingress-generator-kit version %s", version)
+	log.Infof("kubernetes-ingressify version %s", version)
 }

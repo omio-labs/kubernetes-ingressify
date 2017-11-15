@@ -11,7 +11,7 @@ version="${VERSION:-v0.0.1-snapshot}.$(git rev-parse --short HEAD).$(date -u +"%
 echo $version >> "gen/version"
 
 # Generate license notices
-deps="github.com/goeuro/ingress-generator-kit $(go list -f '{{ join .Deps "\n"}}' ./... | grep -v 'goeuro/ingress-generator-kit')"
+deps="github.com/goeuro/kubernetes-ingressify $(go list -f '{{ join .Deps "\n"}}' ./... | grep -v 'goeuro/kubernetes-ingressify')"
 out="gen/LICENSES"
 echo -e "OPEN SOURCE LICENSES\n" > $out
 

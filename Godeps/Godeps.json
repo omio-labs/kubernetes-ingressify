@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/goeuro/ingress-generator-kit",
+	"ImportPath": "github.com/goeuro/kubernetes-ingressify",
 	"GoVersion": "go1.9",
 	"GodepVersion": "v79",
 	"Deps": [

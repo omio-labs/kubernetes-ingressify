@@ -1,10 +1,10 @@
-# ingress-generator-kit
+# kubernetes-ingressify
 
-[![Latest Release](https://img.shields.io/github/release/goeuro/ingress-generator-kit.svg)](https://github.com/goeuro/ingress-generator-kit/releases/latest)
-[![Build Status](https://img.shields.io/travis/goeuro/ingress-generator-kit.svg?label=master)](https://travis-ci.org/goeuro/ingress-generator-kit)
-[![Release Status](https://img.shields.io/travis/goeuro/ingress-generator-kit/v0.0.1-snapshot.svg?label=release)](https://travis-ci.org/goeuro/ingress-generator-kit/branches)
-[![Go Report Card](https://goreportcard.com/badge/github.com/goeuro/ingress-generator-kit)](https://goreportcard.com/report/github.com/goeuro/ingress-generator-kit)
-[![codecov](https://codecov.io/gh/goeuro/ingress-generator-kit/branch/master/graph/badge.svg)](https://codecov.io/gh/goeuro/ingress-generator-kit)
+[![Latest Release](https://img.shields.io/github/release/goeuro/kubernetes-ingressify.svg)](https://github.com/goeuro/kubernetes-ingressify/releases/latest)
+[![Build Status](https://img.shields.io/travis/goeuro/kubernetes-ingressify.svg?label=master)](https://travis-ci.org/goeuro/kubernetes-ingressify)
+[![Release Status](https://img.shields.io/travis/goeuro/kubernetes-ingressify/v0.0.1-snapshot.svg?label=release)](https://travis-ci.org/goeuro/kubernetes-ingressify/branches)
+[![Go Report Card](https://goreportcard.com/badge/github.com/goeuro/kubernetes-ingressify)](https://goreportcard.com/report/github.com/goeuro/kubernetes-ingressify)
+[![codecov](https://codecov.io/gh/goeuro/kubernetes-ingressify/branch/master/graph/badge.svg)](https://codecov.io/gh/goeuro/kubernetes-ingressify)
 
 This is a simple binary that watches kubernetes ingress rules, renders your template and calls your script.
 You can use this to generate ingress-based configuration for any backend router.
@@ -29,7 +29,7 @@ This is an attempt to decouple router implementation from configuration and allo
 ## Usage
 
 We have a special release called `v0.0.1-snapshot` which always reflects master build.
-Please go ahead and grab it: https://github.com/goeuro/ingress-generator-kit/releases/tag/v0.0.1-snapshot
+Please go ahead and grab it: https://github.com/goeuro/kubernetes-ingressify/releases/tag/v0.0.1-snapshot
 
 Create a configuration file:
 
@@ -45,7 +45,7 @@ hooks:
 Run it:
 
 ```
-ingress-generator-kit -f ingress.cfg
+kubernetes-ingressify -f ingress.cfg
 ```
 
 ## Development
