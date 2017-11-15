@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/apex/log"
-	"github.com/goeuro/kubernetes-ingressify/core"
-	"strings"
 	"flag"
 	"fmt"
+	"github.com/apex/log"
+	"github.com/goeuro/kubernetes-ingressify/core"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"strings"
 )
 
 func main() {
