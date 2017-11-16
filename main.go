@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/apex/log"
-	"github.com/goeuro/kubernetes-ingressify/core"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -12,7 +11,7 @@ import (
 )
 
 func main() {
-	data, err := core.Asset("gen/version")
+	data, err := Asset("gen/version")
 	if err != nil {
 		log.WithError(err).Error("error")
 	}

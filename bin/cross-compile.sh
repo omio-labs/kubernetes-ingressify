@@ -30,7 +30,7 @@ for dep in $deps; do
 done
 
 # Compile bindata
-go-bindata -o core/bindata.go -nometadata -pkg core gen/
+go-bindata -o bindata.go -nometadata gen/
 
 # Cross compile
 gox \
