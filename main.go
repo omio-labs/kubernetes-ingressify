@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/Masterminds/sprig"
 	"github.com/apex/log"
-	"github.com/goeuro/kubernetes-ingressify/core"
 	"html/template"
 	"strings"
 	"time"
