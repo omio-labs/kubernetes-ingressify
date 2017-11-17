@@ -166,3 +166,8 @@ gen/
 **/*.coverprofile
 
 config.*
+
+kubernetes-ingressify
+*.tmpl
+*.config
+.idea
