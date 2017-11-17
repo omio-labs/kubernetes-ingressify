@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	data, err := core.Asset("gen/version")
+	data, err := Asset("gen/version")
 	if err != nil {
 		log.WithError(err).Error("error")
 	}
