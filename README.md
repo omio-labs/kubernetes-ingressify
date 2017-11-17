@@ -18,13 +18,14 @@ Different organizations have different traffic handling needs, and having a thir
 But at the same time, the cost of writing your own ingress controller is also quite high.
 This is an attempt to decouple router implementation from configuration and allow anyone to easily create their own ingress controllers.
 
-## Current status
+## Roadmap
 
 - [x] Bootstrap
-- [ ] >> Design
-- [ ] Implementation+Dogfooding
-- [ ] Documentation and examples
+- [ ] Poll ingress rules, templating and implementation
 - [ ] Release v0.1
+- [ ] Watch endpoint events, templating and implementation
+- [ ] Release v0.2
+- [ ] Documentation and examples
 
 ## Usage
 
