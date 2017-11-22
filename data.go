@@ -1,6 +1,8 @@
 package main
 
-import "k8s.io/api/extensions/v1beta1"
+import (
+	"k8s.io/api/extensions/v1beta1"
+)
 
 type IngressifyRule struct {
 	ServiceName string

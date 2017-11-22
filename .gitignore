@@ -169,5 +169,6 @@ config.*
 
 kubernetes-ingressify
 *.tmpl
+!fixtures/*.tmpl
 *.config
 .idea

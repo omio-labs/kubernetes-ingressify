@@ -1,0 +1,21 @@
+{{ $bypath := GroupByPath .IngRules }}
+{{- range $k, $v := $bypath }}
+Path: {{ $k }}
+{{ range $v }}
+    - host: {{ .Host }}
+    - name: {{ .Name }}
+    - ns: {{ .Namespace }}
+{{ end }}
+{{- end }}
+
+------ By Host
+
+{{ $byhost := GroupByHost .IngRules }}
+{{- range $k, $v := $byhost }}
+Host: {{ $k }}
+{{ range $v }}
+    - host: {{ .Host }}
+    - name: {{ .Name }}
+    - ns: {{ .Namespace }}
+{{ end }}
+{{- end }}
