@@ -1,17 +1,17 @@
 package main
 
 import (
-	"testing"
-	"html/template"
-	"strings"
-	"runtime"
-	"reflect"
 	"fmt"
+	"html/template"
+	"reflect"
+	"runtime"
+	"strings"
+	"testing"
 )
 
 func TestBuildFuncMap(t *testing.T) {
 	funmap1 := template.FuncMap{
-		"Join": strings.Join,
+		"Join":    strings.Join,
 		"Compare": strings.Compare,
 	}
 	funmap2 := template.FuncMap{
@@ -28,8 +28,8 @@ func TestBuildFuncMap(t *testing.T) {
 		t.Errorf(reason)
 	}
 	//The length of resulting map is the sum of the length of the input maps
-	if len(funMap) != len(funmap1) + len(funmap2) {
-		t.Errorf("The lenght of resulting map is not the sum of the length of the input maps, expected %d, got %d", len(funmap1) + len(funmap2), len(funMap))
+	if len(funMap) != len(funmap1)+len(funmap2) {
+		t.Errorf("The lenght of resulting map is not the sum of the length of the input maps, expected %d, got %d", len(funmap1)+len(funmap2), len(funMap))
 	}
 	//Building with empty returns empty map
 	if funMap = BuildFuncMap(funmap3); len(funMap) != 0 {
