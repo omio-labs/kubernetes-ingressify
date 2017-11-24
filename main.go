@@ -25,7 +25,7 @@ func main() {
 	flag.Parse()
 	//TODO handle wrong flags, show usage, help command, dry-run, debug mode
 
-	config := ReadConfig(*configpath)
+	config := readConfig(*configpath)
 	//TODO schema validation for yaml configuration ?
 
 	fmap := template.FuncMap{
@@ -39,7 +39,7 @@ func main() {
 		return
 	}
 
-	duration, err := config.GetInterval()
+	duration, err := config.getInterval()
 	if err != nil {
 		log.WithError(err).Error("Failed to parse interval")
 		return

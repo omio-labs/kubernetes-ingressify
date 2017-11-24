@@ -14,11 +14,11 @@ type Config struct {
 	Hooks       Hook   `json:"hooks"`
 }
 
-func (c Config) GetInterval() (time.Duration, error) {
+func (c Config) getInterval() (time.Duration, error) {
 	return time.ParseDuration(c.Interval)
 }
 
-func ReadConfig(path string) Config {
+func readConfig(path string) Config {
 	var config Config
 	dat, err := ioutil.ReadFile(path)
 	if err != nil {

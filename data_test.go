@@ -5,6 +5,7 @@ import (
 	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"testing"
+	"reflect"
 )
 
 type Set struct {
@@ -119,7 +120,7 @@ func TestGroupByHost(t *testing.T) {
 	// All hosts are in the map
 	for _, r := range ingressifyRules {
 		if _, ok := byHost[r.Host]; !ok {
-			var h string = r.Host
+			var h = r.Host
 			if h == "" {
 				h = "\"\""
 			}
@@ -151,7 +152,7 @@ func TestGroupByPath(t *testing.T) {
 	// All paths are in the map
 	for _, r := range ingressifyRules {
 		if _, ok := byPath[r.Path]; !ok {
-			var p string = r.Path
+			var p = r.Path
 			if p == "" {
 				p = "\"\""
 			}
@@ -189,7 +190,7 @@ func isIngressifyRulePresent(ir IngressifyRule, irs []IngressifyRule) bool {
 func checkIntegrity(ing v1beta1.Ingress, irs []IngressifyRule) (bool, string) {
 	for _, r := range ing.Spec.Rules {
 		for _, p := range r.IngressRuleValue.HTTP.Paths {
-			if !isRulePresent(ing.Name, ing.Namespace, r.Host, p.Path, p.Backend, irs) {
+			if !isRulePresent(ing.Name, ing.Namespace, r.Host, p.Path, p.Backend, ing, irs) {
 				return false, fmt.Sprintf("Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, "+
 					"ServiceName: %s", ing.Name, ing.Namespace, r.Host, p.Path, p.Backend.ServicePort.IntVal, p.Backend.ServiceName)
 			}
@@ -198,10 +199,11 @@ func checkIntegrity(ing v1beta1.Ingress, irs []IngressifyRule) (bool, string) {
 	return true, ""
 }
 
-func isRulePresent(name string, namespace string, host string, path string, backend v1beta1.IngressBackend, irs []IngressifyRule) bool {
+func isRulePresent(name string, namespace string, host string, path string, backend v1beta1.IngressBackend, raw v1beta1.Ingress, irs []IngressifyRule) bool {
 	for _, r := range irs {
 		if r.Name == name && r.Namespace == namespace && r.Host == host && r.Path == path &&
-			r.ServiceName == backend.ServiceName && r.ServicePort == backend.ServicePort.IntVal {
+			r.ServiceName == backend.ServiceName && r.ServicePort == backend.ServicePort.IntVal &&
+				reflect.DeepEqual(r.IngressRaw, raw) {
 			return true
 		}
 	}
@@ -213,7 +215,7 @@ func sizeIngTest(ingListTest v1beta1.IngressList) int {
 	for _, ing := range ingListTest.Items {
 		for _, tr := range ing.Spec.Rules {
 			if tr.Host != "" && len(tr.IngressRuleValue.HTTP.Paths) == 0 {
-				count += 1
+				count++
 				continue
 			}
 			count += len(tr.IngressRuleValue.HTTP.Paths)
