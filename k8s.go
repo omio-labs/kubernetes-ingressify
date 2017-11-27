@@ -20,6 +20,7 @@ func getKubeClient(configfile string) (*kubernetes.Clientset, error) {
 	return clientset, nil
 }
 
+// ScrapeIngresses connects to k8s and retrieves ingresses rules for all the namespaces
 func ScrapeIngresses(kubeconfig string, namespace string) ([]IngressifyRule, error) {
 	clientset, err := getKubeClient(kubeconfig)
 	if err != nil {

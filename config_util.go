@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Config represents the structure of the config file
 type Config struct {
 	Kubeconfig  string `json:"kubeconfig"`
 	Interval    string `json:"interval"`

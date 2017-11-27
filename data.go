@@ -4,6 +4,7 @@ import (
 	"k8s.io/api/extensions/v1beta1"
 )
 
+// IngressifyRule is a denormalization of the Ingresses rules coming from k8s
 type IngressifyRule struct {
 	ServiceName string
 	ServicePort int32
@@ -14,10 +15,12 @@ type IngressifyRule struct {
 	IngressRaw  v1beta1.Ingress
 }
 
+// ICxt holds data used for rendering
 type ICxt struct {
 	IngRules []IngressifyRule
 }
 
+// ToIngressifyRule converts from *v1beta1.IngressList (normalized) to IngressifyRule (denormalized)
 func ToIngressifyRule(il *v1beta1.IngressList) []IngressifyRule {
 	var ifyrules []IngressifyRule
 	for _, ing := range il.Items {
@@ -38,6 +41,7 @@ func ToIngressifyRule(il *v1beta1.IngressList) []IngressifyRule {
 	return ifyrules
 }
 
+// GroupByHost returns a map of IngressifyRule grouped by host
 func GroupByHost(rules []IngressifyRule) map[string][]IngressifyRule {
 	m := make(map[string][]IngressifyRule)
 	for _, rule := range rules {
@@ -50,6 +54,7 @@ func GroupByHost(rules []IngressifyRule) map[string][]IngressifyRule {
 	return m
 }
 
+// GroupByPath returns a map of IngressifyRule grouped by path
 func GroupByPath(rules []IngressifyRule) map[string][]IngressifyRule {
 	m := make(map[string][]IngressifyRule)
 	for _, rule := range rules {

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/apex/log"
 	"html/template"
-	. "html/template"
 	"io/ioutil"
 	"os"
 )
@@ -16,6 +15,7 @@ func readTemplate(tmplpath string) ([]byte, error) {
 	return tmpl, nil
 }
 
+// BuildFuncMap merges template.FuncMap's
 func BuildFuncMap(funcs ...template.FuncMap) template.FuncMap {
 	resmap := make(template.FuncMap)
 	for _, fumap := range funcs {
@@ -26,7 +26,8 @@ func BuildFuncMap(funcs ...template.FuncMap) template.FuncMap {
 	return resmap
 }
 
-func PrepareTemplate(tmplpath string, withfuncs template.FuncMap) (*Template, error) {
+// PrepareTemplate creates a template from `tmplpath` initialized with `withfuncs`
+func PrepareTemplate(tmplpath string, withfuncs template.FuncMap) (*template.Template, error) {
 	tmplstr, err := readTemplate(tmplpath)
 	if err != nil {
 		return nil, err
@@ -35,7 +36,8 @@ func PrepareTemplate(tmplpath string, withfuncs template.FuncMap) (*Template, er
 	return tmpl, nil
 }
 
-func RenderTemplate(tmpl *Template, outpath string, cxt ICxt) error {
+// RenderTemplate renders the template and writes the output to `outpath`
+func RenderTemplate(tmpl *template.Template, outpath string, cxt ICxt) error {
 	output, err := os.Create(outpath)
 	if err != nil {
 		log.WithError(err).Error("Failed to render template")
