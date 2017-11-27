@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"testing"
 	"reflect"
+	"testing"
 )
 
 type Set struct {
@@ -203,7 +203,7 @@ func isRulePresent(name string, namespace string, host string, path string, back
 	for _, r := range irs {
 		if r.Name == name && r.Namespace == namespace && r.Host == host && r.Path == path &&
 			r.ServiceName == backend.ServiceName && r.ServicePort == backend.ServicePort.IntVal &&
-				reflect.DeepEqual(r.IngressRaw, raw) {
+			reflect.DeepEqual(r.IngressRaw, raw) {
 			return true
 		}
 	}
