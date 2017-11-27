@@ -99,7 +99,6 @@ var testRules = v1beta1.IngressList{Items: []v1beta1.Ingress{
 		build(),
 }}
 
-//TODO missing checking if raw is present. Use deepcompare from reflect
 func TestToIngressifyRule(t *testing.T) {
 	testRuleCopy := testRules.DeepCopy()
 	ingressifyRules := ToIngressifyRule(testRuleCopy)
