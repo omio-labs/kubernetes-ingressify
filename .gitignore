@@ -165,4 +165,10 @@ gen/
 *.out
 **/*.coverprofile
 
-config.*
+**/config.*
+
+kubernetes-ingressify
+*.tmpl
+!fixtures/*.tmpl
+*.config
+.idea
