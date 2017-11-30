@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"k8s.io/api/extensions/v1beta1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	"reflect"
 	"testing"
+	"encoding/json"
+	"io/ioutil"
 )
 
 type Set struct {
@@ -25,79 +26,17 @@ func (f Set) IsMember(x string) bool {
 	return prs
 }
 
-type IngressRule v1beta1.IngressRule
-type Ingress v1beta1.Ingress
-
-func buildIngressRule() IngressRule {
-	return IngressRule{IngressRuleValue: v1beta1.IngressRuleValue{HTTP: &v1beta1.HTTPIngressRuleValue{Paths: []v1beta1.HTTPIngressPath{}}}}
+func generateRules() v1beta1.IngressList {
+	test, err := ioutil.ReadFile("./fixtures/ingressList.json")
+	il := v1beta1.IngressList{}
+	err = json.Unmarshal(test, &il)
+	if err != nil {
+		panic(err)
+	}
+	return il
 }
 
-func (ir IngressRule) build() v1beta1.IngressRule {
-	return v1beta1.IngressRule(ir)
-}
-
-func buildIngress() Ingress {
-	return Ingress{}
-}
-
-func (i Ingress) build() v1beta1.Ingress {
-	return v1beta1.Ingress(i)
-}
-
-func (i Ingress) withName(name string) Ingress {
-	i.Name = name
-	return i
-}
-
-func (i Ingress) withNamespace(namespace string) Ingress {
-	i.Namespace = namespace
-	return i
-}
-
-func (i Ingress) withRule(ir v1beta1.IngressRule) Ingress {
-	i.Spec.Rules = append(i.Spec.Rules, ir)
-	return i
-}
-
-func (ir IngressRule) withHost(host string) IngressRule {
-	ir.Host = host
-	return ir
-}
-
-func (ir IngressRule) withPathBackend(path string, svcname string, svcport int32) IngressRule {
-	x := v1beta1.HTTPIngressPath{Path: path, Backend: v1beta1.IngressBackend{ServiceName: svcname,
-		ServicePort: intstr.IntOrString{Type: intstr.Int, IntVal: svcport}}}
-	ir.HTTP.Paths = append(ir.HTTP.Paths, x)
-	return ir
-}
-
-var testRules = v1beta1.IngressList{Items: []v1beta1.Ingress{
-	buildIngress().
-		withName("n1").
-		withNamespace("ns1").
-		withRule(buildIngressRule().
-			withHost("h1").
-			withPathBackend("/svc_n1", "svc1", 30400).
-			withPathBackend("/svc_n1-2", "svc2", 30401).
-			build()).
-		withRule(buildIngressRule().
-			withHost("h1-1").
-			withPathBackend("", "svc1-1", 30402).
-			build()).
-		build(),
-	buildIngress().
-		withName("n2").
-		withNamespace("ns2").
-		withRule(buildIngressRule().
-			withHost("").
-			withPathBackend("/svc_2", "svc2", 30403).
-			build()).
-		withRule(buildIngressRule().
-			withHost("h2").
-			withPathBackend("/svc_n2", "svc2", 30404).
-			build()).
-		build(),
-}}
+var testRules = generateRules()
 
 func TestToIngressifyRule(t *testing.T) {
 	testRuleCopy := testRules.DeepCopy()

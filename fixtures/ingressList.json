@@ -1,0 +1,94 @@
+{
+  "metadata": {},
+  "items": [
+    {
+      "metadata": {
+        "name": "n1",
+        "namespace": "ns1",
+        "creationTimestamp": null
+      },
+      "spec": {
+        "rules": [
+          {
+            "host": "h1",
+            "http": {
+              "paths": [
+                {
+                  "path": "/svc_n1",
+                  "backend": {
+                    "serviceName": "svc1",
+                    "servicePort": 30400
+                  }
+                },
+                {
+                  "path": "/svc_n1-2",
+                  "backend": {
+                    "serviceName": "svc2",
+                    "servicePort": 30401
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "host": "h1-1",
+            "http": {
+              "paths": [
+                {
+                  "backend": {
+                    "serviceName": "svc1-1",
+                    "servicePort": 30402
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "metadata": {
+        "name": "n2",
+        "namespace": "ns2",
+        "creationTimestamp": null
+      },
+      "spec": {
+        "rules": [
+          {
+            "http": {
+              "paths": [
+                {
+                  "path": "/svc_2",
+                  "backend": {
+                    "serviceName": "svc2",
+                    "servicePort": 30403
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "host": "h2",
+            "http": {
+              "paths": [
+                {
+                  "path": "/svc_n2",
+                  "backend": {
+                    "serviceName": "svc2",
+                    "servicePort": 30404
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ]
+}

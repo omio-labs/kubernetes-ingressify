@@ -1,27 +1,22 @@
 http {
-  log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-    '"$request" $body_bytes_sent "$http_referer" '
-    '"$http_user_agent" "$http_x_forwarded_for"';
-  access_log   logs/access.log  main;
-  sendfile     on;
-  tcp_nopush   on;
-  server_names_hash_bucket_size 128; # this seems to be required for some vhosts
 
- {{ $ByHost := GroupByHost .IngRules }}
- {{- range $k, $v := $ByHost }}
+ {{- $byhost := GroupByHost .IngRules }}
+ {{- range $k, $v := $byhost }}
 
  server {
+   server_name {{ $k }} {{ $k }}.*;
+   listen 80
+
    {{ range $v }}
-   listen       {{ .ServicePort }};
-   access_log   logs/domain1.access.log  main;
-   root         html;
-   {{ end }}
+   location ~* ^{{ .Path }} {
+      set $namespace        "{{ .Namespace }}";
+      set $ingress_name     "{{ .Name }}";
+      set $service_name      "{{ .ServiceName }}";
 
-   location ~ \.php$ {
-     fastcgi_pass   127.0.0.1:1025;
+      proxy_pass http://{{ .ServiceName }}.{{ .Namespace }}:{{ .ServicePort }}
+
    }
+   {{ end }}
  }
-
  {{- end }}
-
 }

@@ -1,64 +1,75 @@
 http {
-  log_format   main '$remote_addr - $remote_user [$time_local]  $status '
-    '"$request" $body_bytes_sent "$http_referer" '
-    '"$http_user_agent" "$http_x_forwarded_for"';
-  access_log   logs/access.log  main;
-  sendfile     on;
-  tcp_nopush   on;
-  server_names_hash_bucket_size 128; # this seems to be required for some vhosts
-
- 
 
  server {
-   
-   listen       30403;
-   access_log   logs/domain1.access.log  main;
-   root         html;
-   
+   server_name  .*;
+   listen 80
 
-   location ~ \.php$ {
-     fastcgi_pass   127.0.0.1:1025;
+   
+   location ~* ^/svc_2 {
+      set $namespace        "ns2";
+      set $ingress_name     "n2";
+      set $service_name      "svc2";
+
+      proxy_pass http://svc2.ns2:30403
+
    }
+   
  }
 
  server {
-   
-   listen       30400;
-   access_log   logs/domain1.access.log  main;
-   root         html;
-   
-   listen       30401;
-   access_log   logs/domain1.access.log  main;
-   root         html;
-   
+   server_name h1 h1.*;
+   listen 80
 
-   location ~ \.php$ {
-     fastcgi_pass   127.0.0.1:1025;
+   
+   location ~* ^/svc_n1 {
+      set $namespace        "ns1";
+      set $ingress_name     "n1";
+      set $service_name      "svc1";
+
+      proxy_pass http://svc1.ns1:30400
+
    }
+   
+   location ~* ^/svc_n1-2 {
+      set $namespace        "ns1";
+      set $ingress_name     "n1";
+      set $service_name      "svc2";
+
+      proxy_pass http://svc2.ns1:30401
+
+   }
+   
  }
 
  server {
-   
-   listen       30402;
-   access_log   logs/domain1.access.log  main;
-   root         html;
-   
+   server_name h1-1 h1-1.*;
+   listen 80
 
-   location ~ \.php$ {
-     fastcgi_pass   127.0.0.1:1025;
+   
+   location ~* ^ {
+      set $namespace        "ns1";
+      set $ingress_name     "n1";
+      set $service_name      "svc1-1";
+
+      proxy_pass http://svc1-1.ns1:30402
+
    }
+   
  }
 
  server {
-   
-   listen       30404;
-   access_log   logs/domain1.access.log  main;
-   root         html;
-   
+   server_name h2 h2.*;
+   listen 80
 
-   location ~ \.php$ {
-     fastcgi_pass   127.0.0.1:1025;
+   
+   location ~* ^/svc_n2 {
+      set $namespace        "ns2";
+      set $ingress_name     "n2";
+      set $service_name      "svc2";
+
+      proxy_pass http://svc2.ns2:30404
+
    }
+   
  }
-
 }
