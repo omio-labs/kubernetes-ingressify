@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"k8s.io/api/extensions/v1beta1"
 	"reflect"
 	"testing"
-	"encoding/json"
-	"io/ioutil"
 )
 
 type Set struct {
