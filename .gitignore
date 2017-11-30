@@ -169,6 +169,6 @@ gen/
 
 kubernetes-ingressify
 *.tmpl
-!fixtures/*.tmpl
+!examples/*.tmpl
 *.config
 .idea
