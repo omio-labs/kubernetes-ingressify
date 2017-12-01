@@ -11,14 +11,14 @@ import (
 
 var rules = generateRules()
 
-func TestRenderNginxTemplate(t *testing.T) {
+func runRenderFor(router string) (actual string, expected string) {
 	client := fake.NewSimpleClientset(&rules)
 	irules, err := ScrapeIngresses(client, "")
 	if err != nil {
 		panic(err)
 	}
 
-	config := ReadConfig("./examples/config_for_nginx.yaml")
+	config := ReadConfig(fmt.Sprintf("./examples/config_for_%s.yaml", router))
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
@@ -33,14 +33,21 @@ func TestRenderNginxTemplate(t *testing.T) {
 	cxt := ICxt{IngRules: irules}
 	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
 
-	nginxActual, err := ioutil.ReadFile("/tmp/nginx.actual")
+	actualRes, err := ioutil.ReadFile(fmt.Sprintf("/tmp/%s.actual", router))
 	if err != nil {
 		panic(err)
 	}
-	nginxExpected, err := ioutil.ReadFile("./examples/nginx.expected")
+	expectedRes, err := ioutil.ReadFile(fmt.Sprintf("./examples/%s.expected", router))
 	if err != nil {
 		panic(err)
 	}
+	actual = string(actualRes)
+	expected = string(expectedRes)
+	return
+}
+
+func TestRenderNginxTemplate(t *testing.T) {
+	nginxActual, nginxExpected := runRenderFor("nginx")
 
 	if string(nginxActual) != string(nginxExpected) {
 		t.Errorf("Template results differ")
@@ -54,35 +61,7 @@ func TestRenderNginxTemplate(t *testing.T) {
 }
 
 func TestRenderHaproxyTemplate(t *testing.T) {
-	client := fake.NewSimpleClientset(&rules)
-	irules, err := ScrapeIngresses(client, "")
-	if err != nil {
-		panic(err)
-	}
-
-	config := ReadConfig("./examples/config_for_haproxy.yaml")
-
-	fmap := template.FuncMap{
-		"GroupByHost": GroupByHost,
-		"GroupByPath": GroupByPath,
-	}
-
-	tmpl, err := PrepareTemplate(config.InTemplate, BuildFuncMap(fmap, sprig.FuncMap()))
-	if err != nil {
-		panic(err)
-	}
-
-	cxt := ICxt{IngRules: irules}
-	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
-
-	haproxyActual, err := ioutil.ReadFile("/tmp/haproxy.actual")
-	if err != nil {
-		panic(err)
-	}
-	haproxyExpected, err := ioutil.ReadFile("./examples/haproxy.expected")
-	if err != nil {
-		panic(err)
-	}
+	haproxyActual, haproxyExpected := runRenderFor("haproxy")
 
 	if string(haproxyActual) != string(haproxyExpected) {
 		t.Errorf("Template results differ")
