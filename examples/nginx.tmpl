@@ -16,7 +16,7 @@ http {
       proxy_pass http://{{ .ServiceName }}.{{ .Namespace }}:{{ .ServicePort }}
 
    }
-   {{ end }}
+   {{- end }}
  }
  {{- end }}
 }

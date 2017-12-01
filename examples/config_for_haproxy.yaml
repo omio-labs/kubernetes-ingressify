@@ -1,0 +1,8 @@
+kubeconfig: ./examples/config-k8s.fake
+in_template: ./examples/haproxy.tmpl
+out_file: /tmp/haproxy.actual
+interval: 7s
+hooks:
+  post_render:
+    - "/bin/echo"
+    - "Hello World !"

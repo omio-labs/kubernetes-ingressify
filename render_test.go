@@ -9,14 +9,16 @@ import (
 	"testing"
 )
 
+var rules = generateRules()
+
 func TestRenderNginxTemplate(t *testing.T) {
-	client := fake.NewSimpleClientset(&testRules)
+	client := fake.NewSimpleClientset(&rules)
 	irules, err := ScrapeIngresses(client, "")
 	if err != nil {
 		panic(err)
 	}
 
-	config := ReadConfig("./examples/config.yaml")
+	config := ReadConfig("./examples/config_for_nginx.yaml")
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
@@ -47,6 +49,48 @@ func TestRenderNginxTemplate(t *testing.T) {
 		fmt.Println("----------------------")
 		fmt.Println("Got: ")
 		fmt.Printf("%s\n", nginxActual)
+	}
+
+}
+
+func TestRenderHaproxyTemplate(t *testing.T) {
+	client := fake.NewSimpleClientset(&rules)
+	irules, err := ScrapeIngresses(client, "")
+	if err != nil {
+		panic(err)
+	}
+
+	config := ReadConfig("./examples/config_for_haproxy.yaml")
+
+	fmap := template.FuncMap{
+		"GroupByHost": GroupByHost,
+		"GroupByPath": GroupByPath,
+	}
+
+	tmpl, err := PrepareTemplate(config.InTemplate, BuildFuncMap(fmap, sprig.FuncMap()))
+	if err != nil {
+		panic(err)
+	}
+
+	cxt := ICxt{IngRules: irules}
+	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
+
+	haproxyActual, err := ioutil.ReadFile("/tmp/haproxy.actual")
+	if err != nil {
+		panic(err)
+	}
+	haproxyExpected, err := ioutil.ReadFile("./examples/haproxy.expected")
+	if err != nil {
+		panic(err)
+	}
+
+	if string(haproxyActual) != string(haproxyExpected) {
+		t.Errorf("Template results differ")
+		fmt.Println("Expected:")
+		fmt.Printf("%s\n", haproxyExpected)
+		fmt.Println("----------------------")
+		fmt.Println("Got: ")
+		fmt.Printf("%s\n", haproxyActual)
 	}
 
 }

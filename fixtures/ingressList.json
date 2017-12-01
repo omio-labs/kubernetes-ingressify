@@ -10,20 +10,20 @@
       "spec": {
         "rules": [
           {
-            "host": "h1",
+            "host": "n1.h1",
             "http": {
               "paths": [
                 {
-                  "path": "/svc_n1",
+                  "path": "/svc1_n1",
                   "backend": {
-                    "serviceName": "svc1",
+                    "serviceName": "svc1_n1",
                     "servicePort": 30400
                   }
                 },
                 {
-                  "path": "/svc_n1-2",
+                  "path": "/svc_n1_2",
                   "backend": {
-                    "serviceName": "svc2",
+                    "serviceName": "svc_n1_2",
                     "servicePort": 30401
                   }
                 }
@@ -31,12 +31,12 @@
             }
           },
           {
-            "host": "h1-1",
+            "host": "n1.h2",
             "http": {
               "paths": [
                 {
                   "backend": {
-                    "serviceName": "svc1-1",
+                    "serviceName": "svc_n1_3",
                     "servicePort": 30402
                   }
                 }
@@ -61,23 +61,30 @@
             "http": {
               "paths": [
                 {
-                  "path": "/svc_2",
+                  "path": "/svc1_n2",
                   "backend": {
-                    "serviceName": "svc2",
+                    "serviceName": "svc1_n2",
                     "servicePort": 30403
+                  }
+                },
+                {
+                  "path": "/svc2_n2",
+                  "backend": {
+                    "serviceName": "svc2_n2",
+                    "servicePort": 30408
                   }
                 }
               ]
             }
           },
           {
-            "host": "h2",
+            "host": "n2.h2",
             "http": {
               "paths": [
                 {
-                  "path": "/svc_n2",
+                  "path": "/svc3_n2",
                   "backend": {
-                    "serviceName": "svc2",
+                    "serviceName": "svc3_n2",
                     "servicePort": 30404
                   }
                 }
