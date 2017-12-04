@@ -27,7 +27,7 @@ func (f Set) IsMember(x string) bool {
 }
 
 func generateRules() v1beta1.IngressList {
-	test, err := ioutil.ReadFile("./fixtures/ingressList.json")
+	test, err := ioutil.ReadFile("./examples/ingressList.json")
 	il := v1beta1.IngressList{}
 	err = json.Unmarshal(test, &il)
 	if err != nil {
