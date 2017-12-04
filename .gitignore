@@ -166,9 +166,10 @@ gen/
 **/*.coverprofile
 
 **/config.*
+!examples/config.yaml
 
 kubernetes-ingressify
 *.tmpl
-!fixtures/*.tmpl
+!examples/*.tmpl
 *.config
 .idea

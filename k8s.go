@@ -8,7 +8,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func getKubeClient(configfile string) (*kubernetes.Clientset, error) {
+// GetKubeClient creates a k8s client
+func GetKubeClient(configfile string) (*kubernetes.Clientset, error) {
 	kubeconfig, err := clientcmd.BuildConfigFromFlags("", configfile)
 	if err != nil {
 		return nil, err
@@ -21,12 +22,7 @@ func getKubeClient(configfile string) (*kubernetes.Clientset, error) {
 }
 
 // ScrapeIngresses connects to k8s and retrieves ingresses rules for all the namespaces
-func ScrapeIngresses(kubeconfig string, namespace string) ([]IngressifyRule, error) {
-	clientset, err := getKubeClient(kubeconfig)
-	if err != nil {
-		log.WithError(err).Error("Failed to build k8s client")
-		return nil, err
-	}
+func ScrapeIngresses(client kubernetes.Interface, namespace string) ([]IngressifyRule, error) {
 	var nslog string
 	if namespace == "" {
 		nslog = "Fetching Ingress rules on all namespaces"
@@ -34,7 +30,7 @@ func ScrapeIngresses(kubeconfig string, namespace string) ([]IngressifyRule, err
 		nslog = fmt.Sprintf("Fetching Ingress rules on namespace = %s", namespace)
 	}
 	log.Infof(nslog)
-	ingressClient := clientset.ExtensionsV1beta1().Ingresses(namespace)
+	ingressClient := client.ExtensionsV1beta1().Ingresses(namespace)
 	list, err := ingressClient.List(metav1.ListOptions{})
 	if err != nil {
 		log.WithError(err).Error("Failed to get list of ingresses rules")

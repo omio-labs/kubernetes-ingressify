@@ -19,7 +19,8 @@ func (c Config) getInterval() (time.Duration, error) {
 	return time.ParseDuration(c.Interval)
 }
 
-func readConfig(path string) Config {
+// ReadConfig is a helper function to read the config
+func ReadConfig(path string) Config {
 	var config Config
 	dat, err := ioutil.ReadFile(path)
 	if err != nil {

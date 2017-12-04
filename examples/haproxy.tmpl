@@ -1,0 +1,61 @@
+ global
+     log 127.0.0.1 local0 notice
+     maxconn 2000
+     user haproxy
+     group haproxy
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    retries 3
+    option redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+
+frontend http
+    bind        *:80
+    {{- $bypath := GroupByPath .IngRules -}}
+    {{- range $k, $v := $bypath }}
+    {{- range $v }}
+    {{- if empty $k }}
+    acl host_{{ .Host }}_from_{{ .ServiceName }} hdr(host) -i {{ .Host }}.example.com
+    use_backend bk_{{ .ServiceName }} if host_{{ .Host }}_from_{{ .ServiceName }}
+    {{- else }}
+    acl path_to_{{ .ServiceName }} path_beg -i {{ $k }}
+    use_backend bk_{{ .ServiceName }} if path_to_{{ .ServiceName }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+
+{{ $bypath := GroupByPath .IngRules -}}
+{{- range $k, $v := $bypath }}
+{{ range $v }}
+{{- if empty $k }}
+backend bk_{{ .ServiceName }}
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET {{ .Path }}/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+{{- else }}
+backend bk_{{ .ServiceName }}
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET {{ .Path }}/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+{{- end }}
+{{ end }}
+{{- end }}

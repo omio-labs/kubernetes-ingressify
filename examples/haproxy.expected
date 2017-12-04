@@ -1,0 +1,105 @@
+ global
+     log 127.0.0.1 local0 notice
+     maxconn 2000
+     user haproxy
+     group haproxy
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    retries 3
+    option redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+
+frontend http
+    bind        *:80
+    acl host_n1.h2_from_svc_n1_3 hdr(host) -i n1.h2.example.com
+    use_backend bk_svc_n1_3 if host_n1.h2_from_svc_n1_3
+    acl path_to_svc1_n1 path_beg -i /svc1_n1
+    use_backend bk_svc1_n1 if path_to_svc1_n1
+    acl path_to_svc1_n2 path_beg -i /svc1_n2
+    use_backend bk_svc1_n2 if path_to_svc1_n2
+    acl path_to_svc2_n2 path_beg -i /svc2_n2
+    use_backend bk_svc2_n2 if path_to_svc2_n2
+    acl path_to_svc3_n2 path_beg -i /svc3_n2
+    use_backend bk_svc3_n2 if path_to_svc3_n2
+    acl path_to_svc_n1_2 path_beg -i /svc_n1_2
+    use_backend bk_svc_n1_2 if path_to_svc_n1_2
+
+
+
+
+backend bk_svc_n1_3
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET /health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+
+
+backend bk_svc1_n1
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET /svc1_n1/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+
+
+backend bk_svc1_n2
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET /svc1_n2/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+
+
+backend bk_svc2_n2
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET /svc2_n2/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+
+
+backend bk_svc3_n2
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET /svc3_n2/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup
+
+
+backend bk_svc_n1_2
+    balance source
+    log global
+    option  log-health-checks
+    timeout check 7s
+    option http-keep-alive
+    option httpchk GET /svc_n1_2/health HTTP/1.0\r\nHost:\ 127.0.0.1:80\nUser-agent:\ LB-Check
+    http-check expect rstatus 2..|3..|429
+        server server-1 server-1:80 check inter 7s fall 4
+        server server-2 server-2:80 check inter 7s fall 4 backup

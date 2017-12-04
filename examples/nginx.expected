@@ -1,0 +1,78 @@
+http {
+
+ server {
+   server_name  .*;
+   listen 80
+
+   
+   location ~* ^/svc1_n2 {
+      set $namespace        "ns2";
+      set $ingress_name     "n2";
+      set $service_name      "svc1_n2";
+
+      proxy_pass http://svc1_n2.ns2:30403
+
+   }
+   location ~* ^/svc2_n2 {
+      set $namespace        "ns2";
+      set $ingress_name     "n2";
+      set $service_name      "svc2_n2";
+
+      proxy_pass http://svc2_n2.ns2:30408
+
+   }
+ }
+
+ server {
+   server_name n1.h1 n1.h1.*;
+   listen 80
+
+   
+   location ~* ^/svc1_n1 {
+      set $namespace        "ns1";
+      set $ingress_name     "n1";
+      set $service_name      "svc1_n1";
+
+      proxy_pass http://svc1_n1.ns1:30400
+
+   }
+   location ~* ^/svc_n1_2 {
+      set $namespace        "ns1";
+      set $ingress_name     "n1";
+      set $service_name      "svc_n1_2";
+
+      proxy_pass http://svc_n1_2.ns1:30401
+
+   }
+ }
+
+ server {
+   server_name n1.h2 n1.h2.*;
+   listen 80
+
+   
+   location ~* ^ {
+      set $namespace        "ns1";
+      set $ingress_name     "n1";
+      set $service_name      "svc_n1_3";
+
+      proxy_pass http://svc_n1_3.ns1:30402
+
+   }
+ }
+
+ server {
+   server_name n2.h2 n2.h2.*;
+   listen 80
+
+   
+   location ~* ^/svc3_n2 {
+      set $namespace        "ns2";
+      set $ingress_name     "n2";
+      set $service_name      "svc3_n2";
+
+      proxy_pass http://svc3_n2.ns2:30404
+
+   }
+ }
+}

@@ -25,12 +25,18 @@ func main() {
 	flag.Parse()
 	//TODO handle wrong flags, show usage, help command, dry-run, debug mode
 
-	config := readConfig(*configpath)
+	config := ReadConfig(*configpath)
 	//TODO schema validation for yaml configuration ?
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
 		"GroupByPath": GroupByPath,
+	}
+
+	clientset, err := GetKubeClient(config.Kubeconfig)
+	if err != nil {
+		log.WithError(err).Error("Failed to build k8s client")
+		return
 	}
 
 	tmpl, err := PrepareTemplate(config.InTemplate, BuildFuncMap(fmap, sprig.FuncMap()))
@@ -47,7 +53,7 @@ func main() {
 
 	for range time.NewTicker(duration).C {
 		log.Info("Reloading configuration")
-		irules, err := ScrapeIngresses(config.Kubeconfig, "")
+		irules, err := ScrapeIngresses(clientset, "")
 		cxt := ICxt{IngRules: irules}
 		err = RenderTemplate(tmpl, config.OutTemplate, cxt)
 		if err != nil {

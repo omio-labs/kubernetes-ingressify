@@ -1,0 +1,18 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: bXkgY2VydGlmaWNhdGU=
+    server: http://localhost
+  name: fake_k8s
+contexts:
+- context:
+    cluster: fake_k8s
+    user: fake_k8s
+  name: fake_k8s
+current-context: fake_k8s
+kind: Config
+preferences: {}
+users:
+- name: fake_k8s
+  user:
+    token: bXkgdG9rZW4=

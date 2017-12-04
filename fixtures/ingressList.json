@@ -1,0 +1,101 @@
+{
+  "metadata": {},
+  "items": [
+    {
+      "metadata": {
+        "name": "n1",
+        "namespace": "ns1",
+        "creationTimestamp": null
+      },
+      "spec": {
+        "rules": [
+          {
+            "host": "n1.h1",
+            "http": {
+              "paths": [
+                {
+                  "path": "/svc1_n1",
+                  "backend": {
+                    "serviceName": "svc1_n1",
+                    "servicePort": 30400
+                  }
+                },
+                {
+                  "path": "/svc_n1_2",
+                  "backend": {
+                    "serviceName": "svc_n1_2",
+                    "servicePort": 30401
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "host": "n1.h2",
+            "http": {
+              "paths": [
+                {
+                  "backend": {
+                    "serviceName": "svc_n1_3",
+                    "servicePort": 30402
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    },
+    {
+      "metadata": {
+        "name": "n2",
+        "namespace": "ns2",
+        "creationTimestamp": null
+      },
+      "spec": {
+        "rules": [
+          {
+            "http": {
+              "paths": [
+                {
+                  "path": "/svc1_n2",
+                  "backend": {
+                    "serviceName": "svc1_n2",
+                    "servicePort": 30403
+                  }
+                },
+                {
+                  "path": "/svc2_n2",
+                  "backend": {
+                    "serviceName": "svc2_n2",
+                    "servicePort": 30408
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "host": "n2.h2",
+            "http": {
+              "paths": [
+                {
+                  "path": "/svc3_n2",
+                  "backend": {
+                    "serviceName": "svc3_n2",
+                    "servicePort": 30404
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ]
+}

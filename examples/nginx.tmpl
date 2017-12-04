@@ -1,0 +1,22 @@
+http {
+
+ {{- $byhost := GroupByHost .IngRules }}
+ {{- range $k, $v := $byhost }}
+
+ server {
+   server_name {{ $k }} {{ $k }}.*;
+   listen 80
+
+   {{ range $v }}
+   location ~* ^{{ .Path }} {
+      set $namespace        "{{ .Namespace }}";
+      set $ingress_name     "{{ .Name }}";
+      set $service_name      "{{ .ServiceName }}";
+
+      proxy_pass http://{{ .ServiceName }}.{{ .Namespace }}:{{ .ServicePort }}
+
+   }
+   {{- end }}
+ }
+ {{- end }}
+}
