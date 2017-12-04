@@ -37,17 +37,24 @@ Create a configuration file:
 ```
 # ingress.cfg
 kubeconfig: <path to kubeconfig, leave it empty for in-cluster authentication>
-in-template: <path to template, context provided to template will be documented, defaults to ingress.cfg.tpl>
-out-file: <path to output file, defaults to ingress.cfg>
+in_template: <path to template, context provided to template will be documented, defaults to ingress.cfg.tpl>
+out_file: <path to output file, defaults to ingress.cfg>
+interval: <time between executions>, for field format refer to https://golang.org/pkg/time/#ParseDuration 
 hooks:
-  post-render: <path to script that will be called after template is rendered, e.g. reload nginx/haproxy/etc>
+  post-render:
+    - script 1
+    - script 2
+    - ...
+    - script n 
 ```
 
 Run it:
 
 ```
-kubernetes-ingressify -f ingress.cfg
+kubernetes-ingressify -config ingress.cfg
 ```
+
+For more usage details, please refer to the [examples](https://github.com/goeuro/kubernetes-ingressify/tree/master/examples) 
 
 ## Development
 
