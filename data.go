@@ -2,10 +2,12 @@ package main
 
 import (
 	"k8s.io/api/extensions/v1beta1"
+	"hash/fnv"
 )
 
 // IngressifyRule is a denormalization of the Ingresses rules coming from k8s
 type IngressifyRule struct {
+	Hash        uint32
 	ServiceName string
 	ServicePort int32
 	Host        string
@@ -18,6 +20,12 @@ type IngressifyRule struct {
 // ICxt holds data used for rendering
 type ICxt struct {
 	IngRules []IngressifyRule
+}
+
+func hash(s string) uint32 {
+	h := fnv.New32a()
+	h.Write([]byte(s))
+	return h.Sum32()
 }
 
 // ToIngressifyRule converts from *v1beta1.IngressList (normalized) to IngressifyRule (denormalized)
@@ -33,6 +41,7 @@ func ToIngressifyRule(il *v1beta1.IngressList) []IngressifyRule {
 				ir.Path = path.Path
 				ir.ServiceName = path.Backend.ServiceName
 				ir.ServicePort = path.Backend.ServicePort.IntVal
+				ir.Hash = hash(ing.Namespace + path.Backend.ServiceName + ir.Host + ir.Path)
 				ir.IngressRaw = ing
 				ifyrules = append(ifyrules, ir)
 			}
