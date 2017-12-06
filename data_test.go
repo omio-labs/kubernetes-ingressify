@@ -26,8 +26,8 @@ func (f Set) IsMember(x string) bool {
 	return prs
 }
 
-func generateRules() v1beta1.IngressList {
-	test, err := ioutil.ReadFile("./examples/ingressList.json")
+func generateRules(from string) v1beta1.IngressList {
+	test, err := ioutil.ReadFile(from)
 	il := v1beta1.IngressList{}
 	err = json.Unmarshal(test, &il)
 	if err != nil {
@@ -36,12 +36,10 @@ func generateRules() v1beta1.IngressList {
 	return il
 }
 
-var testRules = generateRules()
-
 func TestToIngressifyRule(t *testing.T) {
-	testRuleCopy := testRules.DeepCopy()
-	ingressifyRules := ToIngressifyRule(testRuleCopy)
-	if numIngRules, numIngTestRules := len(ingressifyRules), sizeIngTest(*testRuleCopy); numIngRules != numIngTestRules {
+	testRules := generateRules("./examples/ingressList.json")
+	ingressifyRules := ToIngressifyRule(&testRules)
+	if numIngRules, numIngTestRules := len(ingressifyRules), sizeIngTest(testRules); numIngRules != numIngTestRules {
 		t.Errorf("IngressifyRules size, got %s, expected %s", numIngRules, numIngTestRules)
 	}
 	for _, ingTestRule := range testRules.Items {
@@ -52,8 +50,8 @@ func TestToIngressifyRule(t *testing.T) {
 }
 
 func TestGroupByHost(t *testing.T) {
-	testRulesCopy := testRules.DeepCopy()
-	ingressifyRules := ToIngressifyRule(testRulesCopy)
+	testRules := generateRules("./examples/ingressList.json")
+	ingressifyRules := ToIngressifyRule(&testRules)
 	byHost := GroupByHost(ingressifyRules)
 	// All hosts are in the map
 	for _, r := range ingressifyRules {
@@ -84,8 +82,8 @@ func TestGroupByHost(t *testing.T) {
 }
 
 func TestGroupByPath(t *testing.T) {
-	testRuleCopy := testRules.DeepCopy()
-	ingressifyRules := ToIngressifyRule(testRuleCopy)
+	testRules := generateRules("./examples/ingressList.json")
+	ingressifyRules := ToIngressifyRule(&testRules)
 	byPath := GroupByPath(ingressifyRules)
 	// All paths are in the map
 	for _, r := range ingressifyRules {
