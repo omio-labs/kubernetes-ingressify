@@ -53,7 +53,6 @@ func main() {
 
 	if *runOnce {
 		render(config, clientset, tmpl, dryRun, logHook)
-		return
 	} else {
 		for range time.NewTicker(duration).C {
 			render(config, clientset, tmpl, dryRun, logHook)
