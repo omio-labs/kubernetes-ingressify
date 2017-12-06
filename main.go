@@ -21,8 +21,7 @@ func main() {
 	log.Infof("kubernetes-ingressify version %s", version)
 
 	configPath := flag.String("config", "", "path to the config file")
-	noHooks := flag.Bool("no-hooks", false, "Renders template without calling post hooks")
-	runOnce := flag.Bool("run-once", false, "Run once and exits")
+	dryRun := flag.Bool("dry-run", false, "Run once without hooks and exits")
 	flag.Parse()
 
 	config := ReadConfig(*configPath)
@@ -50,16 +49,16 @@ func main() {
 		return
 	}
 
-	if *runOnce {
-		render(config, clientset, tmpl, noHooks)
+	if *dryRun {
+		render(config, clientset, tmpl, false)
 	} else {
 		for range time.NewTicker(duration).C {
-			render(config, clientset, tmpl, noHooks)
+			render(config, clientset, tmpl, true)
 		}
 	}
 }
 
-func render(config Config, clientset *kubernetes.Clientset, tmpl *template.Template, dryRun *bool) {
+func render(config Config, clientset *kubernetes.Clientset, tmpl *template.Template, withHooks bool) {
 	irules, err := ScrapeIngresses(clientset, "")
 	cxt := ICxt{IngRules: irules}
 	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
@@ -67,7 +66,7 @@ func render(config Config, clientset *kubernetes.Clientset, tmpl *template.Templ
 		log.WithError(err).Error("Failed to render template")
 		return
 	}
-	if !*dryRun {
+	if !withHooks {
 		log.Info("Running post hook")
 		out, err := ExecHook(config.Hooks.PostRender)
 		if err != nil {
