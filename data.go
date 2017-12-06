@@ -41,7 +41,7 @@ func ToIngressifyRule(il *v1beta1.IngressList) []IngressifyRule {
 				ir.Path = path.Path
 				ir.ServiceName = path.Backend.ServiceName
 				ir.ServicePort = path.Backend.ServicePort.IntVal
-				ir.Hash = hash(ing.Namespace + path.Backend.ServiceName + ir.Host + ir.Path)
+				ir.Hash = hash(ing.Namespace + ing.Name + path.Backend.ServiceName + ir.Host + ir.Path)
 				ir.IngressRaw = ing
 				ifyrules = append(ifyrules, ir)
 			}
