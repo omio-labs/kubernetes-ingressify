@@ -49,6 +49,11 @@ func TestToIngressifyRule(t *testing.T) {
 			t.Errorf("Missing rule: %s", missingRule)
 		}
 	}
+	for _, r := range ingressifyRules {
+		if r.Hash == 0 {
+			t.Errorf("Invalid hash for Ingressify Rule. Hash = %d", r.Hash)
+		}
+	}
 }
 
 func TestGroupByHost(t *testing.T) {
@@ -79,6 +84,9 @@ func TestGroupByHost(t *testing.T) {
 		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)
+		}
+		if r.Hash == 0 {
+			t.Errorf("Invalid hash for Ingressify Rule. Hash = %d", r.Hash)
 		}
 	}
 }
@@ -111,6 +119,9 @@ func TestGroupByPath(t *testing.T) {
 		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)
+		}
+		if r.Hash == 0 {
+			t.Errorf("Invalid hash for Ingressify Rule. Hash = %d", r.Hash)
 		}
 	}
 }
