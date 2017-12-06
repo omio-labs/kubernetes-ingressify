@@ -66,7 +66,7 @@ func render(config Config, clientset *kubernetes.Clientset, tmpl *template.Templ
 		log.WithError(err).Error("Failed to render template")
 		return
 	}
-	if !withHooks {
+	if withHooks {
 		log.Info("Running post hook")
 		out, err := ExecHook(config.Hooks.PostRender)
 		if err != nil {
