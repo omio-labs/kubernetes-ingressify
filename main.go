@@ -6,9 +6,9 @@ import (
 	"github.com/Masterminds/sprig"
 	"github.com/apex/log"
 	"html/template"
+	"k8s.io/client-go/kubernetes"
 	"strings"
 	"time"
-	"k8s.io/client-go/kubernetes"
 )
 
 func main() {
