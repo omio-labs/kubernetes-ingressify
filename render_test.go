@@ -9,9 +9,8 @@ import (
 	"testing"
 )
 
-var rules = generateRules()
-
 func runRenderFor(router string) (actual string, expected string) {
+	rules := generateRules("./examples/ingressList.json")
 	client := fake.NewSimpleClientset(&rules)
 	irules, err := ScrapeIngresses(client, "")
 	if err != nil {
