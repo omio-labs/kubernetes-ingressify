@@ -7,6 +7,7 @@ import (
 	"github.com/apex/log"
 	"html/template"
 	"k8s.io/client-go/kubernetes"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -25,6 +26,8 @@ func main() {
 	flag.Parse()
 
 	config := ReadConfig(*configPath)
+
+	go bootstrapHealthCheck(config.HealthCheckPort)
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
@@ -55,6 +58,17 @@ func main() {
 		for range time.NewTicker(duration).C {
 			render(config, clientset, tmpl, true)
 		}
+	}
+}
+
+func bootstrapHealthCheck(port uint32) {
+	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
+		fmt.Fprintf(writer, "I am alive !\n")
+	})
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if err != nil {
+		log.WithError(err).Error("Couldn't bootstrap http health server")
+		return
 	}
 }
 
