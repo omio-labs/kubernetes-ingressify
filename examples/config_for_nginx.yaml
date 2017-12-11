@@ -2,6 +2,7 @@ kubeconfig: ./examples/config-k8s.fake
 in_template: ./examples/nginx.tmpl
 out_file: /tmp/nginx.actual
 interval: 7s
+health_check_port: 8099
 hooks:
   post_render:
     - "/bin/echo"
