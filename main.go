@@ -6,6 +6,7 @@ import (
 	"github.com/Masterminds/sprig"
 	"github.com/apex/log"
 	"html/template"
+	"k8s.io/client-go/kubernetes"
 	"strings"
 	"time"
 )
@@ -19,14 +20,11 @@ func main() {
 	version := strings.TrimSpace(string(data))
 	log.Infof("kubernetes-ingressify version %s", version)
 
-	configpath := flag.String("config", "", "path to the config file")
-	dryrun := flag.Bool("dry-run", false, "Renders template without calling post hooks")
-	loghook := flag.Bool("log-hook", false, "Logs output from hooks")
+	configPath := flag.String("config", "", "path to the config file")
+	dryRun := flag.Bool("dry-run", false, "Run once without hooks and exits")
 	flag.Parse()
-	//TODO handle wrong flags, show usage, help command, dry-run, debug mode
 
-	config := ReadConfig(*configpath)
-	//TODO schema validation for yaml configuration ?
+	config := ReadConfig(*configPath)
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
@@ -51,26 +49,31 @@ func main() {
 		return
 	}
 
-	for range time.NewTicker(duration).C {
-		log.Info("Reloading configuration")
-		irules, err := ScrapeIngresses(clientset, "")
-		cxt := ICxt{IngRules: irules}
-		err = RenderTemplate(tmpl, config.OutTemplate, cxt)
+	if *dryRun {
+		render(config, clientset, tmpl, false)
+	} else {
+		for range time.NewTicker(duration).C {
+			render(config, clientset, tmpl, true)
+		}
+	}
+}
+
+func render(config Config, clientset *kubernetes.Clientset, tmpl *template.Template, withHooks bool) {
+	irules, err := ScrapeIngresses(clientset, "")
+	cxt := ICxt{IngRules: irules}
+	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
+	if err != nil {
+		log.WithError(err).Error("Failed to render template")
+		return
+	}
+	if withHooks {
+		log.Info("Running post hook")
+		out, err := ExecHook(config.Hooks.PostRender)
 		if err != nil {
-			log.WithError(err).Error("Failed to render template")
+			log.WithError(err).Error("Failed to run post hook")
 			return
 		}
-		if !*dryrun {
-			log.Info("Running post hook")
-			out, err := ExecHook(config.Hooks.PostRender)
-			if err != nil {
-				log.WithError(err).Error("Failed to run post hook")
-				return
-			}
-			if *loghook {
-				log.Info("Output from post hook")
-				fmt.Println(out)
-			}
-		}
+		log.Info("Output from post hook")
+		fmt.Println(out)
 	}
 }
