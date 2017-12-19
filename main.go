@@ -28,7 +28,7 @@ func main() {
 
 	config := ReadConfig(*configPath)
 
-	renderReport := make(chan RenderStatus, 10)
+	renderReport := make(chan OpsStatus, 10)
 
 	go bootstrapHealthCheck(config.HealthCheckPort, renderReport)
 
@@ -56,16 +56,21 @@ func main() {
 	}
 
 	if *dryRun {
-		render(config, clientset, tmpl, false, renderReport)
+		render(config.OutTemplate, clientset, tmpl, renderReport)
 	} else {
 		for range time.NewTicker(duration).C {
-			render(config, clientset, tmpl, true, renderReport)
+			err = render(config.OutTemplate, clientset, tmpl, renderReport)
+			if err != nil {
+				log.WithError(err).Error("Failed to render template")
+				continue //we don't bother to exec hooks since the rendering failed
+			}
+			execHooks(config, renderReport)
 		}
 	}
 }
 
-func bootstrapHealthCheck(port uint32, hookStatus <-chan RenderStatus) {
-	lastReport := RenderStatus{isSuccess: true, error: nil}
+func bootstrapHealthCheck(port uint32, hookStatus <-chan OpsStatus) {
+	lastReport := OpsStatus{isSuccess: true, error: nil}
 	http.HandleFunc("/health", func(writer http.ResponseWriter, request *http.Request) {
 		lastReport.mux.Lock()
 		select {
@@ -83,7 +88,7 @@ func bootstrapHealthCheck(port uint32, hookStatus <-chan RenderStatus) {
 	}
 }
 
-func createHealthResponse(lastReport RenderStatus, writer http.ResponseWriter) {
+func createHealthResponse(lastReport OpsStatus, writer http.ResponseWriter) {
 	if lastReport.isSuccess {
 		fmt.Fprintf(writer, "Healthy !\n")
 		writer.WriteHeader(http.StatusOK)
@@ -93,34 +98,34 @@ func createHealthResponse(lastReport RenderStatus, writer http.ResponseWriter) {
 	}
 }
 
-// RenderStatus holds information to track failures/success on render function
+// OpsStatus holds information to track failures/success on render function
 // this information gets bubbled up to the health check.
-type RenderStatus struct {
+type OpsStatus struct {
 	isSuccess bool
 	error     error
 	mux       sync.Mutex
 }
 
-func render(config Config, clientset *kubernetes.Clientset, tmpl *template.Template, withHooks bool,
-	renderReport chan<- RenderStatus) {
-	irules, err := ScrapeIngresses(clientset, "")
-	cxt := ICxt{IngRules: irules}
-	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
+func execHooks(config Config, renderReport chan<- OpsStatus) {
+	log.Info("Running post hook")
+	out, err := ExecHook(config.Hooks.PostRender)
 	if err != nil {
-		log.WithError(err).Error("Failed to render template")
-		renderReport <- RenderStatus{isSuccess: false, error: err}
+		log.WithError(err).Error("Failed to run post hook")
+		renderReport <- OpsStatus{isSuccess: false, error: err}
 		return
 	}
-	if withHooks {
-		log.Info("Running post hook")
-		out, err := ExecHook(config.Hooks.PostRender)
-		if err != nil {
-			log.WithError(err).Error("Failed to run post hook")
-			renderReport <- RenderStatus{isSuccess: false, error: err}
-			return
-		}
-		log.Info("Output from post hook")
-		fmt.Println(out)
-		renderReport <- RenderStatus{isSuccess: true, error: nil}
+	log.Info("Output from post hook")
+	fmt.Println(out)
+	renderReport <- OpsStatus{isSuccess: true, error: nil}
+}
+
+func render(outPath string, clientset *kubernetes.Clientset, tmpl *template.Template, renderReport chan<- OpsStatus) error {
+	irules, err := ScrapeIngresses(clientset, "")
+	cxt := ICxt{IngRules: irules}
+	err = RenderTemplate(tmpl, outPath, cxt)
+	if err != nil {
+		renderReport <- OpsStatus{isSuccess: false, error: err}
+		return err
 	}
+	return nil
 }
