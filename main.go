@@ -98,7 +98,7 @@ func createHealthResponse(lastReport OpsStatus, writer http.ResponseWriter) {
 	}
 }
 
-// OpsStatus holds information to track failures/success on render function
+// OpsStatus holds information to track failures/success of render and execHooks functions
 // this information gets bubbled up to the health check.
 type OpsStatus struct {
 	isSuccess bool
