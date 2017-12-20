@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"github.com/apex/log"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/pkg/api/v1"
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 // GetKubeClient creates a k8s client
@@ -32,7 +32,7 @@ func ScrapeIngresses(client kubernetes.Interface, namespace string) (*v1beta1.In
 	}
 	log.Infof(nslog)
 	ingressClient := client.ExtensionsV1beta1().Ingresses(namespace)
-	list, err := ingressClient.List(metav1.ListOptions{})
+	list, err := ingressClient.List(v1.ListOptions{})
 	if err != nil {
 		log.WithError(err).Error("Failed to get list of ingresses rules")
 		return nil, err
