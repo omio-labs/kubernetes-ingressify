@@ -122,7 +122,7 @@ func execHooks(config Config, renderReport chan<- OpsStatus) {
 
 func render(outPath string, clientset *kubernetes.Clientset, tmpl *template.Template, renderReport chan<- OpsStatus) error {
 	irules, err := ScrapeIngresses(clientset, "")
-	cxt := ICxt{IngRules: irules}
+	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
 	err = RenderTemplate(tmpl, outPath, cxt)
 	if err != nil {
 		renderReport <- OpsStatus{isSuccess: false, error: err}
