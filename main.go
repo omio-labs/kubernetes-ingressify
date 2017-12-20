@@ -29,6 +29,7 @@ func main() {
 	config := ReadConfig(*configPath)
 
 	renderReport := make(chan OpsStatus, 10)
+	defer close(renderReport)
 
 	go bootstrapHealthCheck(config.HealthCheckPort, renderReport)
 
