@@ -1,3 +1,4 @@
 comment: false
 ignore:
-  - "core/bindata.go"
+  - "bindata.go"
+  - "test_utils.go"

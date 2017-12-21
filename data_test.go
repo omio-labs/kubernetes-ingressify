@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"k8s.io/api/extensions/v1beta1"
+	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"reflect"
 	"testing"
 )

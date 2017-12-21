@@ -39,6 +39,7 @@ func PrepareTemplate(tmplpath string, withfuncs template.FuncMap) (*template.Tem
 // RenderTemplate renders the template and writes the output to `outpath`
 func RenderTemplate(tmpl *template.Template, outpath string, cxt ICxt) error {
 	output, err := os.Create(outpath)
+	defer output.Close()
 	if err != nil {
 		log.WithError(err).Error("Failed to render template")
 		return err
