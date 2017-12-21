@@ -43,10 +43,13 @@ func main() {
 	}
 
 	server := buildHealthServer(opsStatus, duration, config.HealthCheckPort)
-	exit := make(chan os.Signal, 1)
-	defer close(exit)
-	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
-	go bootstrapHealthCheck(server, exit)
+	serverExit := make(chan os.Signal, 1)
+	defer close(serverExit)
+	mainExit := make(chan os.Signal, 1)
+	defer close(mainExit)
+	signal.Notify(serverExit, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(mainExit, syscall.SIGINT, syscall.SIGTERM)
+	go bootstrapHealthCheck(server, serverExit)
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
@@ -78,6 +81,17 @@ func main() {
 			err = execHooks(config, opsStatus)
 			if err != nil {
 				opsStatus <- &OpsStatus{isSuccess: false, timestamp: time.Now(), error: err}
+				continue
+			}
+			opsStatus <- &OpsStatus{isSuccess: true, timestamp: time.Now()}
+			select {
+				case <-mainExit:
+					log.Info("Gracefully shutting down...")
+					log.Info("Waiting for server to shutdown...")
+					time.Sleep(5 * time.Second)
+					return
+				default:
+					continue
 			}
 		}
 	}
@@ -125,7 +139,7 @@ func bootstrapHealthCheck(server *http.Server, exit <-chan os.Signal) {
 		server.Shutdown(rootCtx)
 		cancel()
 	}()
-	log.WithError(server.ListenAndServe()).Error("Couldn't bootstrap http health server")
+	log.WithError(server.ListenAndServe()).Error("Health server is down...")
 }
 
 func createHealthResponse(lastReport OpsStatus, writer http.ResponseWriter) {
