@@ -46,7 +46,7 @@ func main() {
 	exit := make(chan os.Signal, 1)
 	defer close(exit)
 	signal.Notify(exit, syscall.SIGINT, syscall.SIGTERM)
-	go BootstrapHealthCheck(server, exit)
+	go bootstrapHealthCheck(server, exit)
 
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
@@ -84,7 +84,7 @@ func main() {
 }
 func buildHealthServer(status chan *OpsStatus, duration time.Duration, port uint32) *http.Server {
 	lastReport := OpsStatus{isSuccess: true, timestamp: time.Now()}
-	healthHandler := HealthHandler{opsStatus: status, cacheExpirationTime: duration, lastReport: &lastReport}
+	healthHandler := healthHandler{opsStatus: status, cacheExpirationTime: duration, lastReport: &lastReport}
 	http.HandleFunc("/health", healthHandler.ServeHTTP)
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
@@ -93,14 +93,14 @@ func buildHealthServer(status chan *OpsStatus, duration time.Duration, port uint
 	return server
 }
 
-type HealthHandler struct {
+type healthHandler struct {
 	opsStatus           chan *OpsStatus
 	cacheExpirationTime time.Duration
 	lastReport          *OpsStatus
 	sync.Mutex
 }
 
-func (hh HealthHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func (hh healthHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	hh.Lock()
 	select {
 	case currentReport := <-hh.opsStatus:
@@ -117,7 +117,7 @@ func (hh HealthHandler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 	hh.Unlock()
 }
 
-func BootstrapHealthCheck(server *http.Server, exit <-chan os.Signal) {
+func bootstrapHealthCheck(server *http.Server, exit <-chan os.Signal) {
 	rootCtx, cancel := context.WithCancel(context.Background())
 	go func() {
 		<-exit

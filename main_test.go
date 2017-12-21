@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-func handlerBuilder() HealthHandler {
+func handlerBuilder() healthHandler {
 	var opsReport = make(chan *OpsStatus, 10)
 	defaultReport := OpsStatus{isSuccess: true, timestamp: time.Now()}
-	hhandler := HealthHandler{opsStatus: opsReport, cacheExpirationTime: REFRESH_INTERVAL, lastReport: &defaultReport}
+	hhandler := healthHandler{opsStatus: opsReport, cacheExpirationTime: REFRESHINTERVAL, lastReport: &defaultReport}
 	return hhandler
 }
 
@@ -32,7 +32,7 @@ func TestBootstrapHealthCheck_should_return_500_when_cache_has_expired(t *testin
 	r, _ := http.NewRequest("GET", "/health", nil)
 	w := httptest.NewRecorder()
 	hhandler.ServeHTTP(w, r)
-	time.Sleep(REFRESH_INTERVAL) //sleep interval so the cache expires
+	time.Sleep(REFRESHINTERVAL) //sleep interval so the cache expires
 	r, _ = http.NewRequest("GET", "/health", nil)
 	w = httptest.NewRecorder()
 	hhandler.ServeHTTP(w, r)
@@ -111,7 +111,7 @@ func TestBootstrapHealthCheck_should_not_return_cache_after_report_and_cache_exp
 	if string(body) != expectedBody {
 		t.Errorf("Body is wrong, got: %s, expected: %s", string(body), expectedBody)
 	}
-	time.Sleep(REFRESH_INTERVAL)
+	time.Sleep(REFRESHINTERVAL)
 	// call again without making report should give us the last response again
 	r, _ = http.NewRequest("GET", "/health", nil)
 	w = httptest.NewRecorder()

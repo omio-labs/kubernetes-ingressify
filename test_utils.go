@@ -3,6 +3,8 @@ package main
 import "time"
 
 const (
-	PORT             uint32 = 9595
-	REFRESH_INTERVAL        = 3 * time.Second
+	// PORT is the port
+	PORT uint32 = 9595
+	// REFRESHINTERVAL is the cache expiration time in seconds
+	REFRESHINTERVAL = 3 * time.Second
 )
