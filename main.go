@@ -85,13 +85,13 @@ func main() {
 			}
 			opsStatus <- &OpsStatus{isSuccess: true, timestamp: time.Now()}
 			select {
-				case <-mainExit:
-					log.Info("Gracefully shutting down...")
-					log.Info("Waiting for server to shutdown...")
-					time.Sleep(5 * time.Second)
-					return
-				default:
-					continue
+			case <-mainExit:
+				log.Info("Gracefully shutting down...")
+				log.Info("Waiting for server to shutdown...")
+				time.Sleep(5 * time.Second)
+				return
+			default:
+				continue
 			}
 		}
 	}
