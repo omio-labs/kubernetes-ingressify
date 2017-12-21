@@ -112,7 +112,7 @@ func TestBootstrapHealthCheck_should_not_return_cache_after_report_and_cache_exp
 		t.Errorf("Body is wrong, got: %s, expected: %s", string(body), expectedBody)
 	}
 	time.Sleep(REFRESHINTERVAL)
-	// call again without making report should give us the last response again
+	// call again without making report should gives us an error since cache expired
 	r, _ = http.NewRequest("GET", "/health", nil)
 	w = httptest.NewRecorder()
 	hhandler.ServeHTTP(w, r)
