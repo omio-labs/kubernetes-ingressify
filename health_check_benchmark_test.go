@@ -8,8 +8,7 @@ import (
 
 func init() {
 	var opsReport = make(chan *OpsStatus, 10)
-	server := buildHealthServer(opsReport, REFRESHINTERVAL, PORT)
-	go bootstrapHealthCheck(server, nil)
+	go runHealthCheckServer(opsReport, REFRESHINTERVAL, PORT)
 }
 
 func BenchmarkBootstrapHealthCheck(b *testing.B) {

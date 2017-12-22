@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"github.com/Masterminds/sprig"
@@ -10,11 +9,8 @@ import (
 	"html/template"
 	"k8s.io/client-go/kubernetes"
 	"net/http"
-	"os"
-	"os/signal"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -42,15 +38,6 @@ func main() {
 		return
 	}
 
-	server := buildHealthServer(opsStatus, duration, config.HealthCheckPort)
-	serverExit := make(chan os.Signal, 1)
-	defer close(serverExit)
-	mainExit := make(chan os.Signal, 1)
-	defer close(mainExit)
-	signal.Notify(serverExit, syscall.SIGINT, syscall.SIGTERM)
-	signal.Notify(mainExit, syscall.SIGINT, syscall.SIGTERM)
-	go bootstrapHealthCheck(server, serverExit)
-
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
 		"GroupByPath": GroupByPath,
@@ -68,43 +55,34 @@ func main() {
 		return
 	}
 
-	if *dryRun {
-		render(config.OutTemplate, clientset, tmpl)
-	} else {
-		for range time.NewTicker(duration).C {
-			err = render(config.OutTemplate, clientset, tmpl)
-			if err != nil {
-				log.WithError(err).Error("Failed to render template")
-				opsStatus <- &OpsStatus{isSuccess: false, timestamp: time.Now(), error: err}
-				continue //we don't bother to exec hooks since the rendering failed
-			}
-			err = execHooks(config, opsStatus)
-			if err != nil {
-				opsStatus <- &OpsStatus{isSuccess: false, timestamp: time.Now(), error: err}
-				continue
-			}
-			opsStatus <- &OpsStatus{isSuccess: true, timestamp: time.Now()}
-			select {
-			case <-mainExit:
-				log.Info("Gracefully shutting down...")
-				log.Info("Waiting for server to shutdown...")
-				time.Sleep(5 * time.Second)
-				return
-			default:
-				continue
+	go func() {
+		if *dryRun {
+			render(config.OutTemplate, clientset, tmpl)
+		} else {
+			for range time.NewTicker(duration).C {
+				err = render(config.OutTemplate, clientset, tmpl)
+				if err != nil {
+					log.WithError(err).Error("Failed to render template")
+					opsStatus <- &OpsStatus{isSuccess: false, timestamp: time.Now(), error: err}
+					continue //we don't bother to exec hooks since the rendering failed
+				}
+				err = execHooks(config, opsStatus)
+				if err != nil {
+					opsStatus <- &OpsStatus{isSuccess: false, timestamp: time.Now(), error: err}
+					continue
+				}
+				opsStatus <- &OpsStatus{isSuccess: true, timestamp: time.Now()}
 			}
 		}
-	}
+	}()
+	log.WithError(runHealthCheckServer(opsStatus, duration, config.HealthCheckPort)).Error("Health server is down...")
 }
-func buildHealthServer(status chan *OpsStatus, duration time.Duration, port uint32) *http.Server {
+
+func runHealthCheckServer(status chan *OpsStatus, duration time.Duration, port uint32) error {
 	lastReport := OpsStatus{isSuccess: true, timestamp: time.Now()}
 	healthHandler := healthHandler{opsStatus: status, cacheExpirationTime: duration, lastReport: &lastReport}
 	http.HandleFunc("/health", healthHandler.ServeHTTP)
-	server := &http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: http.DefaultServeMux,
-	}
-	return server
+	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
 
 type healthHandler struct {
@@ -129,17 +107,6 @@ func (hh healthHandler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		}
 	}
 	hh.Unlock()
-}
-
-func bootstrapHealthCheck(server *http.Server, exit <-chan os.Signal) {
-	rootCtx, cancel := context.WithCancel(context.Background())
-	go func() {
-		<-exit
-		log.Info("terminating http server")
-		server.Shutdown(rootCtx)
-		cancel()
-	}()
-	log.WithError(server.ListenAndServe()).Error("Health server is down...")
 }
 
 func createHealthResponse(lastReport OpsStatus, writer http.ResponseWriter) {
