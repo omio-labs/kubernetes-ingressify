@@ -2,7 +2,7 @@ package main
 
 import (
 	"hash/fnv"
-	"k8s.io/api/extensions/v1beta1"
+	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 // IngressifyRule is a denormalization of the Ingresses rules coming from k8s

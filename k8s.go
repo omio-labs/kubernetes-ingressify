@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"github.com/apex/log"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/pkg/api/v1"
+	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -22,7 +23,7 @@ func GetKubeClient(configfile string) (*kubernetes.Clientset, error) {
 }
 
 // ScrapeIngresses connects to k8s and retrieves ingresses rules for all the namespaces
-func ScrapeIngresses(client kubernetes.Interface, namespace string) ([]IngressifyRule, error) {
+func ScrapeIngresses(client kubernetes.Interface, namespace string) (*v1beta1.IngressList, error) {
 	var nslog string
 	if namespace == "" {
 		nslog = "Fetching Ingress rules on all namespaces"
@@ -31,10 +32,10 @@ func ScrapeIngresses(client kubernetes.Interface, namespace string) ([]Ingressif
 	}
 	log.Infof(nslog)
 	ingressClient := client.ExtensionsV1beta1().Ingresses(namespace)
-	list, err := ingressClient.List(metav1.ListOptions{})
+	list, err := ingressClient.List(v1.ListOptions{})
 	if err != nil {
 		log.WithError(err).Error("Failed to get list of ingresses rules")
 		return nil, err
 	}
-	return ToIngressifyRule(list), nil
+	return list, nil
 }

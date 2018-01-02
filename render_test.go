@@ -29,7 +29,7 @@ func runRenderFor(router string) (actual string, expected string) {
 		panic(err)
 	}
 
-	cxt := ICxt{IngRules: irules}
+	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
 	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
 
 	actualRes, err := ioutil.ReadFile(fmt.Sprintf("/tmp/%s.actual", router))
