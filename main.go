@@ -55,10 +55,10 @@ func main() {
 		return
 	}
 
-	go func() {
-		if *dryRun {
-			render(config.OutTemplate, clientset, tmpl)
-		} else {
+	if *dryRun {
+		render(config.OutTemplate, clientset, tmpl)
+	} else {
+		go func() {
 			for range time.NewTicker(duration).C {
 				err = render(config.OutTemplate, clientset, tmpl)
 				if err != nil {
@@ -73,9 +73,9 @@ func main() {
 				}
 				opsStatus <- &OpsStatus{isSuccess: true, timestamp: time.Now()}
 			}
-		}
-	}()
-	log.WithError(runHealthCheckServer(opsStatus, duration, config.HealthCheckPort)).Error("Health server is down...")
+		}()
+		log.WithError(runHealthCheckServer(opsStatus, duration, config.HealthCheckPort)).Error("Health server is down...")
+	}
 }
 
 func runHealthCheckServer(status chan *OpsStatus, duration time.Duration, port uint32) error {
