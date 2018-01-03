@@ -3,15 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/Masterminds/sprig"
-	"github.com/apex/log"
-	"github.com/pkg/errors"
 	"html/template"
-	"k8s.io/client-go/kubernetes"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/Masterminds/sprig"
+	"github.com/apex/log"
+	"github.com/pkg/errors"
+	"k8s.io/client-go/kubernetes"
 )
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 	fmap := template.FuncMap{
 		"GroupByHost": GroupByHost,
 		"GroupByPath": GroupByPath,
+		"GroupByName": GroupByName,
 	}
 
 	clientset, err := GetKubeClient(config.Kubeconfig)
