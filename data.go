@@ -77,7 +77,7 @@ func groupByGeneric(rules []IngressifyRule, fields ...string) map[string][]Ingre
 	m := make(map[string][]IngressifyRule)
 	for _, rule := range rules {
 		value := getGroupingKey(&rule, fields...)
-		if m[value] != nil {
+		if _, ok := m[value]; ok {
 			m[value] = append(m[value], rule)
 		} else {
 			m[value] = []IngressifyRule{rule}
