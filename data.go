@@ -63,15 +63,20 @@ func GroupByPath(rules []IngressifyRule) map[string][]IngressifyRule {
 	return groupByGeneric(rules, "Path")
 }
 
-// GroupByName returns a map of IngressifyRule grouped by ir.Name
+// GroupByName returns a map of IngressifyRule grouped by ir.ServiceName + ir.Namespace
 func GroupByName(rules []IngressifyRule) map[string][]IngressifyRule {
 	return groupByGeneric(rules, "ServiceName", "Namespace")
 }
 
+/*
+ 		groupByGeneric - helper function to introspect on []IngressifyRule
+		to create a map which keys are the concatenation of  fields present in
+	  IngressifyRule structure
+*/
 func groupByGeneric(rules []IngressifyRule, fields ...string) map[string][]IngressifyRule {
 	m := make(map[string][]IngressifyRule)
 	for _, rule := range rules {
-		value := getFieldStrings(&rule, fields...)
+		value := getGroupingKey(&rule, fields...)
 		if m[value] != nil {
 			m[value] = append(m[value], rule)
 		} else {
@@ -81,7 +86,8 @@ func groupByGeneric(rules []IngressifyRule, fields ...string) map[string][]Ingre
 	return m
 }
 
-func getFieldStrings(ir *IngressifyRule, fields ...string) string {
+// getGroupingKey - helper function for groupByGeneric to create the grouping key
+func getGroupingKey(ir *IngressifyRule, fields ...string) string {
 	r := reflect.ValueOf(ir)
 	var key string
 	for _, field := range fields {
