@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 	"reflect"
 	"testing"
+
+	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
 type Set struct {
@@ -40,7 +41,7 @@ func TestToIngressifyRule(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
 	if numIngRules, numIngTestRules := len(ingressifyRules), sizeIngTest(testRules); numIngRules != numIngTestRules {
-		t.Errorf("IngressifyRules size, got %s, expected %s", numIngRules, numIngTestRules)
+		t.Errorf("IngressifyRules size, got %d, expected %d", numIngRules, numIngTestRules)
 	}
 	for _, ingTestRule := range testRules.Items {
 		if ok, missingRule := checkIntegrity(ingTestRule, ingressifyRules); !ok {
@@ -106,6 +107,43 @@ func TestGroupByPath(t *testing.T) {
 	// All IngressifyRules are mapped
 	for _, r := range ingressifyRules {
 		mr, _ := byPath[r.Path]
+		if !isIngressifyRulePresent(r, mr) {
+			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
+				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)
+		}
+	}
+}
+
+func TestGroupByServiceName(t *testing.T) {
+	testRules := generateRules("./examples/ingressList.json")
+	ingressifyRules := ToIngressifyRule(&testRules)
+	bySvcNs := GroupBySvcNs(ingressifyRules)
+	// All paths are in the map
+	for _, r := range ingressifyRules {
+		if _, ok := bySvcNs[r.ServiceName+"-"+r.Namespace]; !ok {
+			var p = r.Name
+			if p == "" {
+				p = "\"\""
+			}
+			t.Errorf("Name %s not found !", p)
+		}
+	}
+	// There are exactly as many keys as Names
+	set := make(map[string][]IngressifyRule)
+	for _, r := range ingressifyRules {
+		key := r.ServiceName + r.Namespace
+		if _, ok := set[key]; ok {
+			set[key] = append(set[key], r)
+		} else {
+			set[key] = []IngressifyRule{r}
+		}
+	}
+	if len(set) != len(bySvcNs) {
+		t.Errorf("Number of paths is different than number of keys, got %d, expected %d", len(bySvcNs), len(set))
+	}
+	// All IngressifyRules are mapped
+	for _, r := range ingressifyRules {
+		mr, _ := bySvcNs[r.ServiceName+"-"+r.Namespace]
 		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)

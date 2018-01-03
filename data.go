@@ -2,6 +2,9 @@ package main
 
 import (
 	"hash/fnv"
+	"reflect"
+	"strings"
+
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
 )
 
@@ -50,28 +53,46 @@ func ToIngressifyRule(il *v1beta1.IngressList) []IngressifyRule {
 	return ifyrules
 }
 
-// GroupByHost returns a map of IngressifyRule grouped by host
+// GroupByHost returns a map of IngressifyRule grouped by ir.Host
 func GroupByHost(rules []IngressifyRule) map[string][]IngressifyRule {
+	return groupByGeneric(rules, "Host")
+}
+
+// GroupByPath returns a map of IngressifyRule grouped by ir.Path
+func GroupByPath(rules []IngressifyRule) map[string][]IngressifyRule {
+	return groupByGeneric(rules, "Path")
+}
+
+// GroupBySvcNs returns a map of IngressifyRule grouped by ir.ServiceName + ir.Namespace
+func GroupBySvcNs(rules []IngressifyRule) map[string][]IngressifyRule {
+	return groupByGeneric(rules, "ServiceName", "Namespace")
+}
+
+/*
+ 		groupByGeneric - helper function to introspect on []IngressifyRule
+		to create a map which keys are the concatenation of  fields present in
+	  IngressifyRule structure
+*/
+func groupByGeneric(rules []IngressifyRule, fields ...string) map[string][]IngressifyRule {
 	m := make(map[string][]IngressifyRule)
 	for _, rule := range rules {
-		if m[rule.Host] != nil {
-			m[rule.Host] = append(m[rule.Host], rule)
+		value := getGroupingKey(&rule, fields...)
+		if _, ok := m[value]; ok {
+			m[value] = append(m[value], rule)
 		} else {
-			m[rule.Host] = []IngressifyRule{rule}
+			m[value] = []IngressifyRule{rule}
 		}
 	}
 	return m
 }
 
-// GroupByPath returns a map of IngressifyRule grouped by path
-func GroupByPath(rules []IngressifyRule) map[string][]IngressifyRule {
-	m := make(map[string][]IngressifyRule)
-	for _, rule := range rules {
-		if m[rule.Path] != nil {
-			m[rule.Path] = append(m[rule.Path], rule)
-		} else {
-			m[rule.Path] = []IngressifyRule{rule}
-		}
+// getGroupingKey - helper function for groupByGeneric to create the grouping key
+func getGroupingKey(ir *IngressifyRule, fields ...string) string {
+	r := reflect.ValueOf(ir)
+	var key string
+	for _, field := range fields {
+		f := reflect.Indirect(r).FieldByName(field)
+		key = key + "-" + f.String()
 	}
-	return m
+	return strings.TrimPrefix(key, "-")
 }
