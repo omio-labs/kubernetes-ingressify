@@ -117,10 +117,10 @@ func TestGroupByPath(t *testing.T) {
 func TestGroupByServiceName(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	byName := GroupByName(ingressifyRules)
+	bySvcNs := GroupBySvcNs(ingressifyRules)
 	// All paths are in the map
 	for _, r := range ingressifyRules {
-		if _, ok := byName[r.ServiceName+"-"+r.Namespace]; !ok {
+		if _, ok := bySvcNs[r.ServiceName+"-"+r.Namespace]; !ok {
 			var p = r.Name
 			if p == "" {
 				p = "\"\""
@@ -138,12 +138,12 @@ func TestGroupByServiceName(t *testing.T) {
 			set[key] = []IngressifyRule{r}
 		}
 	}
-	if len(set) != len(byName) {
-		t.Errorf("Number of paths is different than number of keys, got %d, expected %d", len(byName), len(set))
+	if len(set) != len(bySvcNs) {
+		t.Errorf("Number of paths is different than number of keys, got %d, expected %d", len(bySvcNs), len(set))
 	}
 	// All IngressifyRules are mapped
 	for _, r := range ingressifyRules {
-		mr, _ := byName[r.ServiceName+"-"+r.Namespace]
+		mr, _ := bySvcNs[r.ServiceName+"-"+r.Namespace]
 		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)

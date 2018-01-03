@@ -40,9 +40,9 @@ func main() {
 	}
 
 	fmap := template.FuncMap{
-		"GroupByHost": GroupByHost,
-		"GroupByPath": GroupByPath,
-		"GroupByName": GroupByName,
+		"GroupByHost":  GroupByHost,
+		"GroupByPath":  GroupByPath,
+		"GroupBySvcNs": GroupBySvcNs,
 	}
 
 	clientset, err := GetKubeClient(config.Kubeconfig)

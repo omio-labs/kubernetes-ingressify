@@ -63,8 +63,8 @@ func GroupByPath(rules []IngressifyRule) map[string][]IngressifyRule {
 	return groupByGeneric(rules, "Path")
 }
 
-// GroupByName returns a map of IngressifyRule grouped by ir.ServiceName + ir.Namespace
-func GroupByName(rules []IngressifyRule) map[string][]IngressifyRule {
+// GroupBySvcNs returns a map of IngressifyRule grouped by ir.ServiceName + ir.Namespace
+func GroupBySvcNs(rules []IngressifyRule) map[string][]IngressifyRule {
 	return groupByGeneric(rules, "ServiceName", "Namespace")
 }
 
