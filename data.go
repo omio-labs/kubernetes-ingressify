@@ -71,7 +71,7 @@ func GroupByName(rules []IngressifyRule) map[string][]IngressifyRule {
 func groupByGeneric(rules []IngressifyRule, fields ...string) map[string][]IngressifyRule {
 	m := make(map[string][]IngressifyRule)
 	for _, rule := range rules {
-		value := getFieldString(&rule, fields...)
+		value := getFieldStrings(&rule, fields...)
 		if m[value] != nil {
 			m[value] = append(m[value], rule)
 		} else {
@@ -81,7 +81,7 @@ func groupByGeneric(rules []IngressifyRule, fields ...string) map[string][]Ingre
 	return m
 }
 
-func getFieldString(ir *IngressifyRule, fields ...string) string {
+func getFieldStrings(ir *IngressifyRule, fields ...string) string {
 	r := reflect.ValueOf(ir)
 	var key string
 	for _, field := range fields {
