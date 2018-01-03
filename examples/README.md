@@ -5,7 +5,7 @@ functions by adding [sprig](http://masterminds.github.io/sprig/) and the followi
 
 - GroupByHost: returns a `map[string]IngressifyRule` grouping ingressify rules by host as key
 - GroupByPath: returns a `map[string]IngressifyRule` grouping ingressify rules by path as key
-- GroupBySvcNs: returns a `map[string]IngressifyRule` grouping ingressify rules by name key that is concatenation result  of the ServiceName and Namespace
+- GroupBySvcNs: returns a `map[string]IngressifyRule` grouping ingressify rules by key which is a concatenation result  of the ServiceName and Namespace
 
 ## What data is available when rendering a template ?
 
