@@ -151,6 +151,17 @@ func TestGroupByServiceName(t *testing.T) {
 	}
 }
 
+func TestOrderByPathLength(t *testing.T) {
+	testRules := generateRules("./examples/ingressList.json")
+	ingressifyRules := ToIngressifyRule(&testRules)
+	ordered := OrderAscByPathLen(ingressifyRules)
+	for i := 0; i < len(ordered)-1; i++ {
+		if len(ordered[i].Path) < len(ordered[i+1].Path) {
+			t.Errorf("Paths are not in ascending order, got: len(%s) < len(%s)", ordered[i].Path, ordered[i+1].Path)
+		}
+	}
+}
+
 func isIngressifyRulePresent(ir IngressifyRule, irs []IngressifyRule) bool {
 	for _, r := range irs {
 		if ir.Namespace == r.Namespace && ir.Name == r.Name && ir.ServicePort == r.ServicePort &&
