@@ -69,7 +69,7 @@ func (ir IngRules) Less(i, j int) bool {
 	return (len(ir[i].Path) > len(ir[j].Path))
 }
 
-// Orders the rules by Path length
+// OrderAscByPathLen order the rules by Path length in ascending order
 func OrderAscByPathLen(rules []IngressifyRule) []IngressifyRule {
 	sort.Sort(IngRules(rules))
 	return rules
