@@ -29,6 +29,9 @@ func (f Set) IsMember(x string) bool {
 
 func generateRules(from string) v1beta1.IngressList {
 	test, err := ioutil.ReadFile(from)
+	if err != nil {
+		panic(err)
+	}
 	il := v1beta1.IngressList{}
 	err = json.Unmarshal(test, &il)
 	if err != nil {
