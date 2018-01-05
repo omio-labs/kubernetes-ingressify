@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
+	"sort"
 )
 
 // IngressifyRule is a denormalization of the Ingresses rules coming from k8s
@@ -51,6 +52,31 @@ func ToIngressifyRule(il *v1beta1.IngressList) []IngressifyRule {
 		}
 	}
 	return ifyrules
+}
+
+// IngRules is just an alias to be able to implement custom sorting.
+type IngRules []IngressifyRule
+
+func (ir IngRules) Len() int {
+	return len(ir)
+}
+
+func (ir IngRules) Swap(i, j int) {
+	ir[i], ir[j] = ir[j], ir[i]
+}
+
+func (ir IngRules) Less(i, j int) bool {
+	return (len(ir[i].Path) < len(ir[j].Path))
+}
+
+// OrderByPathLen order the rules by Path length in ascending or descending order
+func OrderByPathLen(rules []IngressifyRule, asc bool) []IngressifyRule {
+	if asc {
+		sort.Sort(sort.Reverse(IngRules(rules)))
+	} else {
+		sort.Sort(IngRules(rules))
+	}
+	return rules
 }
 
 // GroupByHost returns a map of IngressifyRule grouped by ir.Host
