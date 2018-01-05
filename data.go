@@ -66,12 +66,16 @@ func (ir IngRules) Swap(i, j int) {
 }
 
 func (ir IngRules) Less(i, j int) bool {
-	return (len(ir[i].Path) > len(ir[j].Path))
+	return (len(ir[i].Path) < len(ir[j].Path))
 }
 
-// OrderAscByPathLen order the rules by Path length in ascending order
-func OrderAscByPathLen(rules []IngressifyRule) []IngressifyRule {
-	sort.Sort(IngRules(rules))
+// OrderByPathLen order the rules by Path length in ascending or descending order
+func OrderByPathLen(rules []IngressifyRule, asc bool) []IngressifyRule {
+	if asc {
+		sort.Sort(sort.Reverse(IngRules(rules)))
+	} else {
+		sort.Sort(IngRules(rules))
+	}
 	return rules
 }
 
