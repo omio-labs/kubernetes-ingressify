@@ -94,7 +94,7 @@ type healthHandler struct {
 	sync.Mutex
 }
 
-func (hh healthHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+func (hh *healthHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	hh.Lock()
 	select {
 	case currentReport := <-hh.opsStatus:
@@ -143,6 +143,9 @@ func execHooks(config Config, renderReport chan<- *OpsStatus) error {
 
 func render(outPath string, clientset *kubernetes.Clientset, tmpl *template.Template) error {
 	irules, err := ScrapeIngresses(clientset, "")
+	if err != nil {
+		return err
+	}
 	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
 	err = RenderTemplate(tmpl, outPath, cxt)
 	if err != nil {
