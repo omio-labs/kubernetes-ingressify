@@ -2,18 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
-func handlerBuilder() healthHandler {
+func handlerBuilder() *healthHandler {
 	var opsReport = make(chan *OpsStatus, 10)
 	defaultReport := OpsStatus{isSuccess: true, timestamp: time.Now()}
-	hhandler := healthHandler{opsStatus: opsReport, cacheExpirationTime: REFRESHINTERVAL, lastReport: &defaultReport}
+	hhandler := &healthHandler{opsStatus: opsReport, cacheExpirationTime: REFRESHINTERVAL, lastReport: &defaultReport}
 	return hhandler
 }
 

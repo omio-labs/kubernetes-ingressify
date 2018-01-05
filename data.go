@@ -3,6 +3,7 @@ package main
 import (
 	"hash/fnv"
 	"reflect"
+	"sort"
 	"strings"
 
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"

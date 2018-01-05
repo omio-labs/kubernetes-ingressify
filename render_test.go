@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/Masterminds/sprig"
 	"html/template"
 	"io/ioutil"
-	"k8s.io/client-go/kubernetes/fake"
 	"testing"
+
+	"github.com/Masterminds/sprig"
+	"k8s.io/client-go/kubernetes/fake"
 )
 
 func runRenderFor(router string) (actual string, expected string) {
@@ -31,6 +32,9 @@ func runRenderFor(router string) (actual string, expected string) {
 
 	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
 	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
+	if err != nil {
+		panic(err)
+	}
 
 	actualRes, err := ioutil.ReadFile(fmt.Sprintf("/tmp/%s.actual", router))
 	if err != nil {
