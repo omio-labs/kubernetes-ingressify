@@ -59,7 +59,11 @@ func main() {
 	}
 
 	if *dryRun {
-		render(config.OutTemplate, clientset, tmpl)
+		err = render(config.OutTemplate, clientset, tmpl)
+		if err != nil {
+			log.WithError(err).Error("Failed to render template")
+			panic(err)
+		}
 	} else {
 		go func() {
 			for range time.NewTicker(duration).C {
