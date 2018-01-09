@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -63,7 +62,7 @@ func main() {
 		err = render(config.OutTemplate, clientset, tmpl)
 		if err != nil {
 			log.WithError(err).Error("Failed to render template")
-			os.Exit(1)
+			panic(err)
 		}
 	} else {
 		go func() {
