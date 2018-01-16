@@ -56,7 +56,7 @@ func TestToIngressifyRule(t *testing.T) {
 func TestGroupByHost(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	byHost := GroupByHost(ToGeneric(ingressifyRules))
+	byHost := GroupByHost(ingressifyRules)
 	// All hosts are in the map
 	for _, r := range ingressifyRules {
 		if _, ok := byHost[r.Host]; !ok {
@@ -78,7 +78,7 @@ func TestGroupByHost(t *testing.T) {
 	// All IngressifyRules are mapped
 	for _, r := range ingressifyRules {
 		mr, _ := byHost[r.Host]
-		if !isIngressifyRulePresent(r, FromGeneric(mr)) {
+		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)
 		}
@@ -88,7 +88,7 @@ func TestGroupByHost(t *testing.T) {
 func TestGroupByPath(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	byPath := GroupByPath(ToGeneric(ingressifyRules))
+	byPath := GroupByPath(ingressifyRules)
 	// All paths are in the map
 	for _, r := range ingressifyRules {
 		if _, ok := byPath[r.Path]; !ok {
@@ -110,7 +110,7 @@ func TestGroupByPath(t *testing.T) {
 	// All IngressifyRules are mapped
 	for _, r := range ingressifyRules {
 		mr, _ := byPath[r.Path]
-		if !isIngressifyRulePresent(r, FromGeneric(mr)) {
+		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)
 		}
@@ -120,7 +120,7 @@ func TestGroupByPath(t *testing.T) {
 func TestGroupByServiceName(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	bySvcNs := GroupBySvcNs(ToGeneric(ingressifyRules))
+	bySvcNs := GroupBySvcNs(ingressifyRules)
 	// All paths are in the map
 	for _, r := range ingressifyRules {
 		if _, ok := bySvcNs[r.ServiceName+"-"+r.Namespace]; !ok {
@@ -147,7 +147,7 @@ func TestGroupByServiceName(t *testing.T) {
 	// All IngressifyRules are mapped
 	for _, r := range ingressifyRules {
 		mr, _ := bySvcNs[r.ServiceName+"-"+r.Namespace]
-		if !isIngressifyRulePresent(r, FromGeneric(mr)) {
+		if !isIngressifyRulePresent(r, mr) {
 			t.Errorf("Missing rule, Name: %s, Namespace: %s, Host: %s, Path: %s, ServicePort: %d, ServiceName: %s",
 				r.Name, r.Namespace, r.Host, r.Path, r.ServicePort, r.ServiceName)
 		}
@@ -157,7 +157,7 @@ func TestGroupByServiceName(t *testing.T) {
 func TestOrderByPathLengthAsc(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	ordered := FromGeneric(OrderByPathLen(ToGeneric(ingressifyRules), true))
+	ordered := OrderByPathLen(ingressifyRules, true)
 	for i := 0; i < len(ordered)-1; i++ {
 		if len(ordered[i].Path) < len(ordered[i+1].Path) {
 			t.Errorf("Paths are not in ascending order, got: len(%s) < len(%s)", ordered[i].Path, ordered[i+1].Path)
@@ -168,7 +168,7 @@ func TestOrderByPathLengthAsc(t *testing.T) {
 func TestOrderByPathLengthDesc(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	ordered := FromGeneric(OrderByPathLen(ToGeneric(ingressifyRules), false))
+	ordered := OrderByPathLen(ingressifyRules, false)
 	for i := 0; i < len(ordered)-1; i++ {
 		if len(ordered[i].Path) > len(ordered[i+1].Path) {
 			t.Errorf("Paths are not in descending order, got: len(%s) > len(%s)", ordered[i].Path, ordered[i+1].Path)
@@ -176,30 +176,10 @@ func TestOrderByPathLengthDesc(t *testing.T) {
 	}
 }
 
-func TestFromGeneric(t *testing.T) {
-	testRules := generateRules("./examples/ingressList.json")
-	ingressifyRules := ToIngressifyRule(&testRules)
-	gen := make([]interface{}, len(ingressifyRules))
-	for i := range ingressifyRules {
-		gen[i] = ingressifyRules[i]
-	}
-	fromGen := FromGeneric(gen)
-	// len should be equal
-	if len(fromGen) != len(ingressifyRules) {
-		t.Errorf("Length should be equal, got: %d, expected: %d", len(fromGen), len(ingressifyRules))
-	}
-	// all rules should be the same on both arrays
-	for i := range fromGen {
-		if fromGen[i].Hash != ingressifyRules[i].Hash {
-			t.Errorf("Missing rule after applying FromGeneric, got hash: %d, expected hash: %d", ingressifyRules[i].Hash, fromGen[i].Hash)
-		}
-	}
-}
-
 func TestToGeneric(t *testing.T) {
 	testRules := generateRules("./examples/ingressList.json")
 	ingressifyRules := ToIngressifyRule(&testRules)
-	gen := ToGeneric(ingressifyRules)
+	gen := ToSprigList(ingressifyRules)
 	// len should be equal
 	if len(gen) != len(ingressifyRules) {
 		t.Errorf("Length should be equal, got: %d, expected: %d", len(gen), len(ingressifyRules))
@@ -224,7 +204,7 @@ func TestToGenericMap(t *testing.T) {
 			m[key] = []IngressifyRule{k}
 		}
 	}
-	gen := ToGenericMap(m)
+	gen := ToSprigDict(m)
 	if len(gen) != len(m) {
 		t.Errorf("Maps should have the same length, got: %d, expected: %d", len(gen), len(m))
 	}

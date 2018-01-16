@@ -30,7 +30,7 @@ func runRenderFor(router string) (actual string, expected string) {
 		panic(err)
 	}
 
-	cxt := ICxt{IngRules: ToGeneric(ToIngressifyRule(irules))}
+	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
 	err = RenderTemplate(tmpl, config.OutTemplate, cxt)
 	if err != nil {
 		panic(err)

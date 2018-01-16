@@ -44,6 +44,8 @@ func main() {
 		"GroupByPath":    GroupByPath,
 		"GroupBySvcNs":   GroupBySvcNs,
 		"OrderByPathLen": OrderByPathLen,
+		"ToSprigList":    ToSprigList,
+		"ToSprigDict":    ToSprigDict,
 	}
 
 	clientset, err := GetKubeClient(config.Kubeconfig)
@@ -151,7 +153,7 @@ func render(outPath string, clientset *kubernetes.Clientset, tmpl *template.Temp
 	if err != nil {
 		return err
 	}
-	cxt := ICxt{IngRules: ToGeneric(ToIngressifyRule(irules))}
+	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
 	err = RenderTemplate(tmpl, outPath, cxt)
 	if err != nil {
 		return err
