@@ -26,24 +26,6 @@ type ICxt struct {
 	IngRules []IngressifyRule
 }
 
-// ToSprigList turns an []IngressifyRule to an []interface{}
-func ToSprigList(rules []IngressifyRule) []interface{} {
-	a := make([]interface{}, len(rules))
-	for i := range rules {
-		a[i] = rules[i]
-	}
-	return a
-}
-
-// ToSprigDict turns a map[string][]IngressifyRule to a map[string][]interface{}
-func ToSprigDict(groupedBy map[string][]IngressifyRule) map[string][]interface{} {
-	m := make(map[string][]interface{})
-	for k, v := range groupedBy {
-		m[k] = ToSprigList(v)
-	}
-	return m
-}
-
 func hash(s string) uint32 {
 	h := fnv.New32a()
 	h.Write([]byte(s))

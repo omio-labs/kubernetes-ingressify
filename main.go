@@ -12,6 +12,7 @@ import (
 	"github.com/Masterminds/sprig"
 	"github.com/apex/log"
 	"github.com/pkg/errors"
+	tb "github.com/viant/toolbox"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -44,8 +45,8 @@ func main() {
 		"GroupByPath":    GroupByPath,
 		"GroupBySvcNs":   GroupBySvcNs,
 		"OrderByPathLen": OrderByPathLen,
-		"ToSprigList":    ToSprigList,
-		"ToSprigDict":    ToSprigDict,
+		"AsMap":          tb.AsMap,
+		"AsSlice":        tb.AsSlice,
 	}
 
 	clientset, err := GetKubeClient(config.Kubeconfig)

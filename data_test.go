@@ -176,47 +176,6 @@ func TestOrderByPathLengthDesc(t *testing.T) {
 	}
 }
 
-func TestToGeneric(t *testing.T) {
-	testRules := generateRules("./examples/ingressList.json")
-	ingressifyRules := ToIngressifyRule(&testRules)
-	gen := ToSprigList(ingressifyRules)
-	// len should be equal
-	if len(gen) != len(ingressifyRules) {
-		t.Errorf("Length should be equal, got: %d, expected: %d", len(gen), len(ingressifyRules))
-	}
-	// underlying type must be IngressifyRule
-	for i := range gen {
-		if reflect.TypeOf(gen[i]) != reflect.TypeOf(ingressifyRules[i]) {
-			t.Errorf("Different types, got: %s, expected: %s", reflect.TypeOf(gen[i]), reflect.TypeOf(ingressifyRules[i]))
-		}
-	}
-}
-
-func TestToGenericMap(t *testing.T) {
-	testRules := generateRules("./examples/ingressList.json")
-	ingressifyRules := ToIngressifyRule(&testRules)
-	m := make(map[string][]IngressifyRule)
-	for _, k := range ingressifyRules {
-		key := string(k.Hash)
-		if _, ok := m[key]; ok {
-			m[key] = append(m[key], k)
-		} else {
-			m[key] = []IngressifyRule{k}
-		}
-	}
-	gen := ToSprigDict(m)
-	if len(gen) != len(m) {
-		t.Errorf("Maps should have the same length, got: %d, expected: %d", len(gen), len(m))
-	}
-	for k := range m {
-		for i := range gen[k] {
-			if reflect.TypeOf(gen[k][i]) != reflect.TypeOf(m[k][i]) {
-				t.Errorf("Different types, got: %s, expected: %s", reflect.TypeOf(gen[k][i]), reflect.TypeOf(m[k][i]))
-			}
-		}
-	}
-}
-
 func isIngressifyRulePresent(ir IngressifyRule, irs []IngressifyRule) bool {
 	for _, r := range irs {
 		if ir.Namespace == r.Namespace && ir.Name == r.Name && ir.ServicePort == r.ServicePort &&
