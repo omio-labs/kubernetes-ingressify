@@ -151,7 +151,7 @@ func render(outPath string, clientset *kubernetes.Clientset, tmpl *template.Temp
 	if err != nil {
 		return err
 	}
-	cxt := ICxt{IngRules: ToIngressifyRule(irules)}
+	cxt := ICxt{IngRules: ToGeneric(ToIngressifyRule(irules))}
 	err = RenderTemplate(tmpl, outPath, cxt)
 	if err != nil {
 		return err

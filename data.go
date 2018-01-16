@@ -3,10 +3,10 @@ package main
 import (
 	"hash/fnv"
 	"reflect"
+	"sort"
 	"strings"
 
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
-	"sort"
 )
 
 // IngressifyRule is a denormalization of the Ingresses rules coming from k8s
@@ -21,9 +21,47 @@ type IngressifyRule struct {
 	IngressRaw  v1beta1.Ingress
 }
 
-// ICxt holds data used for rendering
+// ICxt holds data used for rendering.
+// All data is turned into generic so it can be seamlessly used with Sprig
+// functions.
 type ICxt struct {
-	IngRules []IngressifyRule
+	IngRules []interface{}
+}
+
+// ToGeneric turns an []IngressifyRule to an []interface{}
+func ToGeneric(rules []IngressifyRule) []interface{} {
+	a := make([]interface{}, len(rules))
+	for i := range rules {
+		a[i] = rules[i]
+	}
+	return a
+}
+
+// FromGeneric turns an []interface{} into an []IngressifyRule
+func FromGeneric(rules []interface{}) []IngressifyRule {
+	m := make([]IngressifyRule, len(rules))
+	for i := range rules {
+		m[i] = rules[i].(IngressifyRule)
+	}
+	return m
+}
+
+// ToGenericMap turns a map[string][]IngressifyRule to a map[string][]interface{}
+func ToGenericMap(groupedBy map[string][]IngressifyRule) map[string][]interface{} {
+	m := make(map[string][]interface{})
+	for k, v := range groupedBy {
+		m[k] = ToGeneric(v)
+	}
+	return m
+}
+
+// FromGenericMap turns a map[string][]interface{} to a map[string][]IngressifyRule
+func FromGenericMap(grouped map[string][]interface{}) map[string][]IngressifyRule {
+	m := make(map[string][]IngressifyRule)
+	for k, v := range grouped {
+		m[k] = FromGeneric(v)
+	}
+	return m
 }
 
 func hash(s string) uint32 {
@@ -70,28 +108,29 @@ func (ir IngRules) Less(i, j int) bool {
 }
 
 // OrderByPathLen order the rules by Path length in ascending or descending order
-func OrderByPathLen(rules []IngressifyRule, asc bool) []IngressifyRule {
+func OrderByPathLen(rules []interface{}, asc bool) []interface{} {
+	ingRules := FromGeneric(rules)
 	if asc {
-		sort.Sort(sort.Reverse(IngRules(rules)))
+		sort.Sort(sort.Reverse(IngRules(ingRules)))
 	} else {
-		sort.Sort(IngRules(rules))
+		sort.Sort(IngRules(ingRules))
 	}
-	return rules
+	return ToGeneric(ingRules)
 }
 
 // GroupByHost returns a map of IngressifyRule grouped by ir.Host
-func GroupByHost(rules []IngressifyRule) map[string][]IngressifyRule {
-	return groupByGeneric(rules, "Host")
+func GroupByHost(rules []interface{}) map[string][]interface{} {
+	return ToGenericMap(groupByGeneric(FromGeneric(rules), "Host"))
 }
 
 // GroupByPath returns a map of IngressifyRule grouped by ir.Path
-func GroupByPath(rules []IngressifyRule) map[string][]IngressifyRule {
-	return groupByGeneric(rules, "Path")
+func GroupByPath(rules []interface{}) map[string][]interface{} {
+	return ToGenericMap(groupByGeneric(FromGeneric(rules), "Path"))
 }
 
 // GroupBySvcNs returns a map of IngressifyRule grouped by ir.ServiceName + ir.Namespace
-func GroupBySvcNs(rules []IngressifyRule) map[string][]IngressifyRule {
-	return groupByGeneric(rules, "ServiceName", "Namespace")
+func GroupBySvcNs(rules []interface{}) map[string][]interface{} {
+	return ToGenericMap(groupByGeneric(FromGeneric(rules), "ServiceName", "Namespace"))
 }
 
 /*
