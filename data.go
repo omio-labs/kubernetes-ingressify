@@ -22,8 +22,6 @@ type IngressifyRule struct {
 }
 
 // ICxt holds data used for rendering.
-// All data is turned into generic so it can be seamlessly used with Sprig
-// functions.
 type ICxt struct {
 	IngRules []IngressifyRule
 }
