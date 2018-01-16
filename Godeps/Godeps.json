@@ -2,9 +2,6 @@
 	"ImportPath": "github.com/goeuro/kubernetes-ingressify",
 	"GoVersion": "go1.9",
 	"GodepVersion": "v79",
-	"Packages": [
-		"./..."
-	],
 	"Deps": [
 		{
 			"ImportPath": "cloud.google.com/go/compute/metadata",
@@ -210,6 +207,10 @@
 		{
 			"ImportPath": "github.com/ugorji/go/codec",
 			"Rev": "f1f1a805ed361a0e078bb537e4ea78cd37dcf065"
+		},
+		{
+			"ImportPath": "github.com/viant/toolbox",
+			"Rev": "51fd0a1a1855c0c1427ce131ddc0568bc7f15137"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/pbkdf2",
