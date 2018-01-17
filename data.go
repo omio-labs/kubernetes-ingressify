@@ -3,10 +3,11 @@ package main
 import (
 	"hash/fnv"
 	"reflect"
+	"sort"
 	"strings"
 
+	tb "github.com/viant/toolbox"
 	"k8s.io/client-go/pkg/apis/extensions/v1beta1"
-	"sort"
 )
 
 // IngressifyRule is a denormalization of the Ingresses rules coming from k8s
@@ -21,7 +22,7 @@ type IngressifyRule struct {
 	IngressRaw  v1beta1.Ingress
 }
 
-// ICxt holds data used for rendering
+// ICxt holds data used for rendering.
 type ICxt struct {
 	IngRules []IngressifyRule
 }
@@ -30,6 +31,16 @@ func hash(s string) uint32 {
 	h := fnv.New32a()
 	h.Write([]byte(s))
 	return h.Sum32()
+}
+
+// AsMap returns a generic map. Useful for Sprig functions
+func AsMap(sourceMap interface{}) map[string]interface{} {
+	return tb.AsMap(sourceMap)
+}
+
+// AsSlice returns a generic list. Useful for Sprig functions
+func AsSlice(sourceSlice interface{}) []interface{} {
+	return tb.AsSlice(sourceSlice)
 }
 
 // ToIngressifyRule converts from *v1beta1.IngressList (normalized) to IngressifyRule (denormalized)

@@ -44,6 +44,8 @@ func main() {
 		"GroupByPath":    GroupByPath,
 		"GroupBySvcNs":   GroupBySvcNs,
 		"OrderByPathLen": OrderByPathLen,
+		"AsMap":          AsMap,
+		"AsSlice":        AsSlice,
 	}
 
 	clientset, err := GetKubeClient(config.Kubeconfig)
