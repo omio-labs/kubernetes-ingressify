@@ -8,8 +8,6 @@ script:
 - bin/test.sh
 - VERSION="$TRAVIS_TAG" bin/cross-compile.sh
 after_success:
-- mv overalls.coverprofile coverage.txt
-- bash <(curl -s https://codecov.io/bash) -t 1e11888e-6fb8-458d-b0d9-515b49b74529
 - bin/release-latest.sh
 deploy:
   provider: releases
