@@ -1,4 +1,4 @@
-FROM golang:1.9
+FROM golang:1.16
 
 WORKDIR /go/src/github.com/goeuro/kubernetes-ingressify
 COPY Godeps Godeps
